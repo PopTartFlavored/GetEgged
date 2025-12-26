@@ -10,6 +10,7 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -37,18 +38,42 @@ public class DataLoader {
                 te.setOwner(owner);
             }
         }
-        if (e instanceof Sheep sheep && hasData(PDC, COLOR, PersistentDataType.STRING)) {
-            sheep.setColor(DyeColor.valueOf(PDC.get(COLOR, PersistentDataType.STRING)));
+        if (hasData(PDC, COLOR, PersistentDataType.STRING)) {
+            if (e instanceof Sheep sheep) {
+                sheep.setColor(DyeColor.valueOf(PDC.get(COLOR, PersistentDataType.STRING)));
+            }
+            if (e instanceof Llama llama) {
+                llama.setColor(Llama.Color.valueOf(PDC.get(COLOR, PersistentDataType.STRING)));
+            }
         }
         if (e instanceof CollarColorable cce && hasData(PDC, COLLAR, PersistentDataType.STRING)){
             cce.setCollarColor(DyeColor.valueOf(PDC.get(COLLAR, PersistentDataType.STRING)));
         }
-        if (e instanceof Parrot parrot && hasData(PDC, VARIANT, PersistentDataType.STRING)) {
-            loadVariant(PDC, VARIANT, Parrot.Variant.class, parrot::setVariant);
+        if (hasData(PDC, VARIANT, PersistentDataType.STRING)) {
+            if (e instanceof Parrot parrot) {
+                loadVariant(PDC, VARIANT, Parrot.Variant.class, parrot::setVariant);
+            }
+            if (e instanceof Fox fox) {
+                loadVariant(PDC, VARIANT, Fox.Type.class, fox::setFoxType);
+            }
+            if (e instanceof Axolotl axolotl) {
+                loadVariant(PDC, VARIANT, Axolotl.Variant.class, axolotl::setVariant);
+            }
+            if (e instanceof Panda panda) {
+                loadVariant(PDC, VARIANT, Panda.Gene.class, panda::setMainGene);
+                if (hasData(PDC, VARIANT2, PersistentDataType.STRING)) {
+                    loadVariant(PDC, VARIANT2, Panda.Gene.class, panda::setHiddenGene);
+                }
+            }
+            if (e instanceof Frog frog){
+                frog.setVariant(Frog.Variant.valueOf(PDC.get(VARIANT, PersistentDataType.STRING))); //valueOf depreciated - Replace once possible
+            }
         }
-        if (e instanceof Fox fox && hasData(PDC, VARIANT, PersistentDataType.STRING)) {
-            loadVariant(PDC, VARIANT, Fox.Type.class, fox::setFoxType);
+
+        if (e instanceof Cat cat && hasData(PDC, TYPE, PersistentDataType.STRING)){
+            cat.setCatType(Cat.Type.valueOf(PDC.get(TYPE, PersistentDataType.STRING))); //valueOf depreciated - Replace once possible
         }
+
         if (e instanceof AbstractHorse ah){
             if (hasData(PDC, SPEED, PersistentDataType.DOUBLE)) {
                 ah.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(PDC.get(SPEED, PersistentDataType.DOUBLE));

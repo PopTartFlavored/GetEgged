@@ -25,6 +25,10 @@ public class PlayerInteractEntityListener implements Listener {
     public void onInteract(PlayerInteractEntityEvent e){
         Entity entity = e.getRightClicked();
         Player p = e.getPlayer();
+        if(p.getInventory().getItemInMainHand().getType().toString().endsWith("_SPAWN_EGG") && dataManager.fromGetEgged(p.getInventory().getItemInMainHand().getItemMeta())){
+            e.setCancelled(true);
+            return;
+        }
         if (!p.getInventory().getItemInMainHand().getType().equals(Material.STICK)) return;
 
         switch (entity) {

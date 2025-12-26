@@ -4,6 +4,7 @@ import io.jimbonesjim.getEgged.API.DataLoader;
 import io.jimbonesjim.getEgged.API.DataSaver;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.DyeColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
@@ -96,7 +97,34 @@ public class DataManager {
 
         if (e instanceof Sheep sheep){
             lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(String.valueOf(sheep.getColor())).color(NamedTextColor.YELLOW)));
+                    .append(Component.text(String.valueOf(sheep.getColor())).color(dyeToTextColor(sheep.getColor()))));
+        }
+
+        if (e instanceof Fox fox){
+            lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(fox.getFoxType().name()).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof Axolotl axolotl){
+            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(axolotl.getVariant().name()).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof Frog frog){
+            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(frog.getVariant().toString()).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof Cat cat){
+            lore.add(Component.text("Type: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(cat.getType().name()).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof Panda panda){
+            lore.add(Component.text("Main Gene: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(panda.getMainGene().name()).color(NamedTextColor.YELLOW)));
+            lore.add(Component.text("Hidden Gene: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(panda.getHiddenGene().name()).color(NamedTextColor.YELLOW)));
         }
 
         if (e instanceof AbstractHorse ah){
@@ -116,4 +144,21 @@ public class DataManager {
         return lore;
     }
 
+    private NamedTextColor dyeToTextColor(DyeColor dye) {
+        return switch (dye) {
+            case WHITE -> NamedTextColor.WHITE;
+            case ORANGE, BROWN -> NamedTextColor.GOLD;
+            case MAGENTA, PINK -> NamedTextColor.LIGHT_PURPLE;
+            case LIGHT_BLUE -> NamedTextColor.AQUA;
+            case YELLOW -> NamedTextColor.YELLOW;
+            case LIME -> NamedTextColor.GREEN;
+            case GRAY, BLACK -> NamedTextColor.DARK_GRAY;
+            case LIGHT_GRAY -> NamedTextColor.GRAY;
+            case CYAN -> NamedTextColor.DARK_AQUA;
+            case PURPLE -> NamedTextColor.DARK_PURPLE;
+            case BLUE -> NamedTextColor.BLUE;
+            case GREEN -> NamedTextColor.DARK_GREEN;
+            case RED -> NamedTextColor.RED;
+        };
+    }
 }

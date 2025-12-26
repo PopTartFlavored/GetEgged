@@ -14,7 +14,7 @@ public final class GetEgged extends JavaPlugin {
         getServer().getPluginManager().registerEvents( new EntitySpawnListener(dataManager), this);
         DataManager.init(this);
 
-        getLogger().info("Fully enabled GetEgged v0.7.1");
+        getLogger().info("Fully enabled GetEgged v0.7.2");
 
     }
 }

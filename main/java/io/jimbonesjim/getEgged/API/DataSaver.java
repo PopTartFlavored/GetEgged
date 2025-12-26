@@ -25,9 +25,9 @@ public class DataSaver {
         if (e instanceof Axolotl a) saveEnum(a.getVariant(), VARIANT, PDC);
 
         if (e instanceof Parrot p) saveEnum(p.getVariant(), VARIANT, PDC);
-        if (e instanceof Cat c) saveVariant(c.getCatType(), VARIANT, PDC);
+        if (e instanceof Cat c) saveVariant(c.getCatType(), TYPE, PDC);
         if (e instanceof Frog f) saveVariant(f.getVariant(), VARIANT, PDC);
-        if (e instanceof Llama l) saveEnum(l.getColor(), VARIANT, PDC);
+        if (e instanceof Llama l) saveEnum(l.getColor(), COLOR, PDC);
         if (e instanceof TropicalFish tf) {
             saveEnum(tf.getPattern(), PATTERN, PDC);
             saveEnum(tf.getBodyColor(), COLOR, PDC);
@@ -36,7 +36,7 @@ public class DataSaver {
             saveEnum(pd.getMainGene(), VARIANT, PDC);
             saveEnum(pd.getHiddenGene(), VARIANT2, PDC); // new key
         }
-        if (e instanceof Fox fx) saveEnum(fx.getFoxType(), VARIANT, PDC);
+        if (e instanceof Fox fx) saveEnum(fx.getFoxType(), TYPE, PDC);
 
 //        if (e instanceof Cow c) saveVariant(c.getVariant(), VARIANT, PDC);
 //        if (e instanceof Pig p) saveVariant(p.getVariant(), VARIANT, PDC);
