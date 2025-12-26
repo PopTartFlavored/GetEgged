@@ -6,9 +6,10 @@ GetEgged allows players to capture mobs into spawn eggs while preserving importa
 Right-click a mob with the capture item (stick for now) to store it in a spawn egg.
 
 ## Permissions
-- getegged.animal.<MOB>
+- getegged.animal.\<MOB>
 - getegged.animal.*
-- getegged.monster.<MOB>
+- getegged.monster.\<MOB>
+- getegged.monster.*
 - getegged.villager
 
 ## Known Limitations
