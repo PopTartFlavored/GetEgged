@@ -1,0 +1,6 @@
+name: GetEgged
+version: '0.7.1'
+main: io.jimbonesjim.getEgged.GetEgged
+api-version: '1.21'
+authors: [ PopTart ]
+description: Capture mobs into spawn eggs.
