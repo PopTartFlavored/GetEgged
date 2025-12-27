@@ -25,8 +25,8 @@ public class DataSaver {
         if (e instanceof Axolotl a) saveEnum(a.getVariant(), VARIANT, PDC);
 
         if (e instanceof Parrot p) saveEnum(p.getVariant(), VARIANT, PDC);
-        if (e instanceof Cat c) saveVariant(c.getCatType(), TYPE, PDC);
-        if (e instanceof Frog f) saveVariant(f.getVariant(), VARIANT, PDC);
+        if (e instanceof Cat c) saveVariant(c.getCatType().getKey().toString(), TYPE, PDC);
+        if (e instanceof Frog f) saveVariant(f.getVariant().getKey().toString(), VARIANT, PDC);
         if (e instanceof Llama l) saveEnum(l.getColor(), COLOR, PDC);
         if (e instanceof TropicalFish tf) {
             saveEnum(tf.getPattern(), PATTERN, PDC);
@@ -38,10 +38,10 @@ public class DataSaver {
         }
         if (e instanceof Fox fx) saveEnum(fx.getFoxType(), TYPE, PDC);
 
-//        if (e instanceof Cow c) saveVariant(c.getVariant(), VARIANT, PDC);
-//        if (e instanceof Pig p) saveVariant(p.getVariant(), VARIANT, PDC);
-//        if (e instanceof Chicken ch) saveVariant(ch.getVariant(), VARIANT, PDC);
-        if (e instanceof Wolf w) saveVariant(w.getVariant(), VARIANT, PDC);
+        if (e instanceof Cow c) saveVariant(c.getVariant().getKey().toString(), VARIANT, PDC);
+        if (e instanceof Pig p) saveVariant(p.getVariant().getKey().toString(), VARIANT, PDC);
+        if (e instanceof Chicken ch) saveVariant(ch.getVariant().getKey().toString(), VARIANT, PDC);
+        if (e instanceof Wolf w) saveVariant(w.getVariant().getKey().toString(), VARIANT, PDC);
 
         //special cases
         if (e instanceof AbstractHorse ah) saveAbstractHorseData(ah, PDC);
@@ -69,6 +69,10 @@ public class DataSaver {
             PDC.set(COLOR, PersistentDataType.STRING, horse.getColor().name());
             PDC.set(STYLE, PersistentDataType.STRING, horse.getStyle().name());
         }
+        if (ah instanceof Llama llama){
+            PDC.set(COLOR, PersistentDataType.STRING, llama.getColor().name());
+            PDC.set(STRENGTH, PersistentDataType.INTEGER, llama.getStrength());
+        }
     }
 
     private void saveVariant(Object value, NamespacedKey key, PersistentDataContainer PDC){
@@ -81,8 +85,8 @@ public class DataSaver {
     }
 
     private void saveVillagerData(Villager v, PersistentDataContainer PDC){
-        PDC.set(PROF, PersistentDataType.STRING, v.getProfession().toString());
-        PDC.set(TYPE, PersistentDataType.STRING, v.getVillagerType().toString());
+        PDC.set(PROF, PersistentDataType.STRING, v.getProfession().getKey().toString());
+        PDC.set(TYPE, PersistentDataType.STRING, v.getVillagerType().getKey().toString());
         PDC.set(LEVEL, PersistentDataType.INTEGER, v.getVillagerLevel());
     }
 }

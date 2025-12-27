@@ -33,6 +33,7 @@ public class DataManager {
     public static NamespacedKey VARIANT;
     public static NamespacedKey PATTERN;
     public static NamespacedKey VARIANT2;
+    public static NamespacedKey STRENGTH;
     private static DataSaver SAVER;
     private static DataLoader LOADER;
 
@@ -52,6 +53,7 @@ public class DataManager {
         VARIANT = new NamespacedKey(plugin, "variant");
         VARIANT2 = new NamespacedKey(plugin, "variant2");
         PATTERN = new NamespacedKey(plugin, "pattern");
+        STRENGTH = new NamespacedKey(plugin, "strength");
         SAVER = new DataSaver();
         LOADER = new DataLoader();
     }
@@ -117,7 +119,12 @@ public class DataManager {
 
         if (e instanceof Cat cat){
             lore.add(Component.text("Type: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(cat.getType().name()).color(NamedTextColor.YELLOW)));
+                    .append(Component.text(cat.getType().toString()).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof Parrot parrot){
+            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(parrot.getVariant().name()).color(NamedTextColor.YELLOW)));
         }
 
         if (e instanceof Panda panda){
@@ -127,11 +134,23 @@ public class DataManager {
                     .append(Component.text(panda.getHiddenGene().name()).color(NamedTextColor.YELLOW)));
         }
 
+        if (e instanceof TropicalFish tf){
+            lore.add(Component.text("Pattern: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(tf.getPattern().toString()).color(NamedTextColor.YELLOW)));
+            lore.add(Component.text("Color: ").color(NamedTextColor.WHITE).append(Component.text(tf.getBodyColor().toString()).color(dyeToTextColor(tf.getBodyColor()))));
+        }
+
         if (e instanceof AbstractHorse ah){
+            double rawSpeed = ah.getAttribute(Attribute.MOVEMENT_SPEED).getValue();
+            double rawJump = ah.getJumpStrength();
+
             lore.add(Component.text("Jump: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(ah.getJumpStrength()).color(NamedTextColor.YELLOW)));
+                    .append(Component.text( -0.1817584952 * Math.pow(rawJump, 3)
+                            + 3.689713992 * Math.pow(rawJump, 2)
+                            + 2.128599134 * rawJump
+                            - 0.343930367 + " blocks").color(NamedTextColor.YELLOW)));
             lore.add(Component.text("Speed: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(ah.getAttribute(Attribute.MOVEMENT_SPEED).getBaseValue()).color(NamedTextColor.YELLOW)));
+                    .append(Component.text(rawSpeed * 43.2 + " blocks/second")).color(NamedTextColor.YELLOW));
         }
 
         if (e instanceof Horse horse) {
@@ -139,6 +158,11 @@ public class DataManager {
                     .append(Component.text(horse.getColor().toString()).color(NamedTextColor.YELLOW)));
             lore.add(Component.text("Style: ").color(NamedTextColor.WHITE)
                     .append(Component.text(horse.getStyle().toString()).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof Llama llama){
+            lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(llama.getColor().name()).color(NamedTextColor.YELLOW)));
         }
 
         return lore;
