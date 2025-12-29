@@ -1,6 +1,7 @@
 package io.jimbonesjim.getEgged.API;
 
 import io.papermc.paper.entity.CollarColorable;
+import io.papermc.paper.entity.Shearable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
@@ -20,13 +21,18 @@ public class DataSaver {
         if (e instanceof Ageable ae) saveBaby(ae, PDC);
 
         //Variant saving
-        if (e instanceof Sheep s) saveEnum(s.getColor(), COLOR, PDC);
+        if (e instanceof Pig pig) saveVariant(pig.getVariant().getKey().toString(), VARIANT, PDC);
+        if (e instanceof Chicken chicken) saveVariant(chicken.getVariant().getKey().toString(), VARIANT, PDC);
+        //if (e instanceof Cow cow) saveVariant(cow.getVariant().getKey().toString(), VARIANT, PDC);
+        if (e instanceof Sheep s) {
+            saveEnum(s.getColor(), COLOR, PDC);
+            saveSheared(s, PDC);
+        }
         if (e instanceof CollarColorable cce) saveEnum(cce.getCollarColor(), COLLAR, PDC);
         if (e instanceof Axolotl a) saveEnum(a.getVariant(), VARIANT, PDC);
-
         if (e instanceof Parrot p) saveEnum(p.getVariant(), VARIANT, PDC);
-        if (e instanceof Cat c) saveVariant(c.getCatType().getKey().toString(), TYPE, PDC);
-        if (e instanceof Frog f) saveVariant(f.getVariant().getKey().toString(), VARIANT, PDC);
+        if (e instanceof Cat c) saveVariant(c.getCatType().getKey().toString(), CAT_TYPE, PDC);
+        if (e instanceof Frog f) saveVariant(f.getVariant().getKey().getKey(), VARIANT, PDC);
         if (e instanceof Llama l) saveEnum(l.getColor(), COLOR, PDC);
         if (e instanceof TropicalFish tf) {
             saveEnum(tf.getPattern(), PATTERN, PDC);
@@ -37,10 +43,10 @@ public class DataSaver {
             saveEnum(pd.getHiddenGene(), VARIANT2, PDC); // new key
         }
         if (e instanceof Fox fx) saveEnum(fx.getFoxType(), TYPE, PDC);
-
-        if (e instanceof Cow c) saveVariant(c.getVariant().getKey().toString(), VARIANT, PDC);
-        if (e instanceof Pig p) saveVariant(p.getVariant().getKey().toString(), VARIANT, PDC);
-        if (e instanceof Chicken ch) saveVariant(ch.getVariant().getKey().toString(), VARIANT, PDC);
+        if (e instanceof Rabbit rabbit) saveEnum(rabbit.getRabbitType(), TYPE, PDC);
+        if (e instanceof Goat goat) saveHorns(goat, PDC);
+        if (e instanceof Creeper creeper) savePowered(creeper, PDC);
+        if (e instanceof Slime slime) saveSize(slime, PDC);
         if (e instanceof Wolf w) saveVariant(w.getVariant().getKey().toString(), VARIANT, PDC);
 
         //special cases
@@ -62,9 +68,26 @@ public class DataSaver {
         PDC.set(OWNER, PersistentDataType.STRING, te.getOwnerUniqueId().toString());
     }
 
+    private void saveSheared(Shearable se, PersistentDataContainer PDC) {
+        PDC.set(SHEARED, PersistentDataType.BOOLEAN, !se.readyToBeSheared());
+    }
+
+    private void savePowered(Creeper creeper, PersistentDataContainer PDC) {
+        PDC.set(POWERED, PersistentDataType.BOOLEAN, creeper.isPowered());
+    }
+
+    private void saveSize(Slime slime, PersistentDataContainer PDC) {
+        PDC.set(SIZE, PersistentDataType.INTEGER, slime.getSize());
+    }
+
+    private void saveHorns(Goat goat,  PersistentDataContainer PDC) {
+        PDC.set(RIGHT_HORN, PersistentDataType.BOOLEAN, goat.hasRightHorn());
+        PDC.set(LEFT_HORN, PersistentDataType.BOOLEAN, goat.hasLeftHorn());
+    }
+
     private void saveAbstractHorseData(AbstractHorse ah, PersistentDataContainer PDC){
         PDC.set(JUMP, PersistentDataType.DOUBLE, ah.getJumpStrength());
-        PDC.set(SPEED, PersistentDataType.DOUBLE, ah.getAttribute(Attribute.MOVEMENT_SPEED).getBaseValue());
+        PDC.set(SPEED, PersistentDataType.DOUBLE, ah.getAttribute(Attribute.MOVEMENT_SPEED).getValue());
         if (ah instanceof Horse horse){
             PDC.set(COLOR, PersistentDataType.STRING, horse.getColor().name());
             PDC.set(STYLE, PersistentDataType.STRING, horse.getStyle().name());

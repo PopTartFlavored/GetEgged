@@ -10,6 +10,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -25,11 +26,12 @@ public class PlayerInteractEntityListener implements Listener {
     public void onInteract(PlayerInteractEntityEvent e){
         Entity entity = e.getRightClicked();
         Player p = e.getPlayer();
-        if(p.getInventory().getItemInMainHand().getType().toString().endsWith("_SPAWN_EGG") && dataManager.fromGetEgged(p.getInventory().getItemInMainHand().getItemMeta())){
+        ItemStack mainHand = p.getInventory().getItemInMainHand();
+        if(mainHand.getType().name().endsWith("_SPAWN_EGG") && dataManager.fromGetEgged(mainHand.getItemMeta())){
             e.setCancelled(true);
             return;
         }
-        if (!p.getInventory().getItemInMainHand().getType().equals(Material.STICK)) return;
+        if (!dataManager.isMobCaptureItem(mainHand.getItemMeta())) return;
 
         switch (entity) {
             case Animals animal -> {
@@ -40,13 +42,37 @@ public class PlayerInteractEntityListener implements Listener {
             }
             case Monster monster -> {
                 if (!p.hasPermission("getegged.monster." + monster.getType()) && !p.hasPermission("getegged.monster.*")) {
-                    p.sendMessage(Component.text("You do not have permission to egg a " + entity.getType()).color(NamedTextColor.RED));
+                    p.sendMessage(Component.text("You do not have permission to egg a " + monster.getType()).color(NamedTextColor.RED));
+                    return;
+                }
+            }
+            case Enemy enemy -> {
+                if (!p.hasPermission("getegged.monster." + enemy.getType()) && !p.hasPermission("getegged.monster.*")) {
+                    p.sendMessage(Component.text("You do not have permission to egg a " + enemy.getType()).color(NamedTextColor.RED));
                     return;
                 }
             }
             case AbstractVillager abstractVillager -> {
                 if (!p.hasPermission("getegged.villager")) {
-                    p.sendMessage(Component.text("You do not have permission to egg a " + entity.getType()).color(NamedTextColor.RED));
+                    p.sendMessage(Component.text("You do not have permission to egg a " + abstractVillager.getType()).color(NamedTextColor.RED));
+                    return;
+                }
+            }
+            case Ambient ambient -> {
+                    if (!p.hasPermission("getegged.animal." + ambient.getType()) && !p.hasPermission("getegged.animal.*")) {
+                        p.sendMessage(Component.text("You do not have permission to egg a " + ambient.getType()).color(NamedTextColor.RED));
+                        return;
+                    }
+            }
+            case WaterMob watermob -> {
+                if (!p.hasPermission("getegged.animal." + watermob.getType()) && !p.hasPermission("getegged.animal.*")) {
+                    p.sendMessage(Component.text("You do not have permission to egg a " + watermob.getType()).color(NamedTextColor.RED));
+                    return;
+                }
+            }
+            case Golem golem -> {
+                if (!p.hasPermission("getegged.golem." + golem.getType()) && !p.hasPermission("getegged.golem.*")) {
+                    p.sendMessage(Component.text("You do not have permission to egg a " + golem.getType()).color(NamedTextColor.RED));
                     return;
                 }
             }
@@ -55,11 +81,23 @@ public class PlayerInteractEntityListener implements Listener {
             }
         }
 
-        ItemStack egg = ItemStack.of(Material.getMaterial(entity.getType() + "_SPAWN_EGG"));
-        if (egg == null){
+        if (entity instanceof InventoryHolder ih) {
+            if (dataManager.hasItems(ih)){
+                if (ih instanceof ChestedHorse) {
+                    p.sendMessage(Component.text("Cannot egg something with equipments or items").color(NamedTextColor.RED));
+                } else {
+                    p.sendMessage(Component.text("Cannot egg something with items in their inventory").color(NamedTextColor.RED));
+                }
+                return;
+            }
+        }
+
+        Material eggMat = Material.getMaterial(entity.getType().name() + "_SPAWN_EGG");
+        if (eggMat == null) {
             p.sendMessage(Component.text("Could not find spawn egg for entity " + entity.getType()).color(NamedTextColor.RED));
             return;
         }
+        ItemStack egg = new ItemStack(eggMat);
         ItemMeta meta = egg.getItemMeta();
         meta = dataManager.entityToEgg(entity, meta);
         egg.setItemMeta(meta);

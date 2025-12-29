@@ -8,8 +8,8 @@ import org.bukkit.DyeColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,6 +19,7 @@ import java.util.List;
 public class DataManager {
 
     public static NamespacedKey GETEGGED;
+    public static NamespacedKey CAPTURE_TOOL;
     public static NamespacedKey NAME;
     public static NamespacedKey JUMP;
     public static NamespacedKey SPEED;
@@ -34,11 +35,18 @@ public class DataManager {
     public static NamespacedKey PATTERN;
     public static NamespacedKey VARIANT2;
     public static NamespacedKey STRENGTH;
+    public static NamespacedKey SHEARED;
+    public static NamespacedKey POWERED;
+    public static NamespacedKey SIZE;
+    public static NamespacedKey RIGHT_HORN;
+    public static NamespacedKey LEFT_HORN;
+    public static NamespacedKey CAT_TYPE;
     private static DataSaver SAVER;
     private static DataLoader LOADER;
 
     public static void init(JavaPlugin plugin){
         GETEGGED = new NamespacedKey(plugin, "getegged");
+        CAPTURE_TOOL = new NamespacedKey(plugin, "capture_tool");
         NAME = new NamespacedKey(plugin, "name");
         JUMP = new NamespacedKey(plugin, "jump");
         SPEED = new NamespacedKey(plugin, "speed");
@@ -54,13 +62,25 @@ public class DataManager {
         VARIANT2 = new NamespacedKey(plugin, "variant2");
         PATTERN = new NamespacedKey(plugin, "pattern");
         STRENGTH = new NamespacedKey(plugin, "strength");
+        SHEARED = new NamespacedKey(plugin, "sheared");
+        POWERED = new NamespacedKey(plugin, "powered");
+        SIZE = new NamespacedKey(plugin, "size");
+        RIGHT_HORN = new NamespacedKey(plugin, "right_horn");
+        LEFT_HORN = new NamespacedKey(plugin, "left_horn");
+        CAT_TYPE = new NamespacedKey(plugin, "cat_type");
         SAVER = new DataSaver();
         LOADER = new DataLoader();
     }
 
     public boolean fromGetEgged(ItemMeta meta){
-        PersistentDataContainer PDC = meta.getPersistentDataContainer();
-        return PDC.has(GETEGGED, PersistentDataType.BOOLEAN);
+        return meta != null &&
+                meta.getPersistentDataContainer().has(GETEGGED, PersistentDataType.BOOLEAN);
+    }
+
+    public boolean isMobCaptureItem(ItemMeta meta){
+        return meta != null &&
+                meta.getPersistentDataContainer().has(CAPTURE_TOOL, PersistentDataType.BOOLEAN);
+
     }
 
     public ItemMeta entityToEgg(Entity e, ItemMeta meta){
@@ -71,6 +91,10 @@ public class DataManager {
 
     public void eggToEntity(Entity e, ItemMeta meta){
         LOADER.loadData(meta, e);
+    }
+
+    public boolean hasItems(InventoryHolder ih){
+        return ih.getInventory() != null && !ih.getInventory().isEmpty();
     }
 
     public List<Component> setLore(Entity e){
@@ -97,14 +121,43 @@ public class DataManager {
             }
         }
 
+        if (e instanceof Pig pig) {
+            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(pig.getVariant().getKey().getKey()).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof Chicken chicken) {
+            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(chicken.getVariant().getKey().getKey()).color(NamedTextColor.YELLOW)));
+        }
+
         if (e instanceof Sheep sheep){
             lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(String.valueOf(sheep.getColor())).color(dyeToTextColor(sheep.getColor()))));
+                    .append(Component.text(String.valueOf(sheep.getColor()))
+                            .color(dyeToTextColor(sheep.getColor()))));
+            lore.add(Component.text("Sheared: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(!sheep.readyToBeSheared() ? "Yes" : "No")
+                            .color(!sheep.readyToBeSheared() ? NamedTextColor.GREEN : NamedTextColor.RED)));
+        }
+
+        if (e instanceof Creeper creeper){
+            lore.add(Component.text("Powered: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(creeper.isPowered() ? "Yes" : "No").color(creeper.isPowered() ? NamedTextColor.GREEN : NamedTextColor.RED)));
+        }
+
+        if (e instanceof Slime slime){
+            lore.add(Component.text("Size: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(slime.getSize()).color(NamedTextColor.YELLOW)));
         }
 
         if (e instanceof Fox fox){
             lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
                     .append(Component.text(fox.getFoxType().name()).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof Rabbit rabbit){
+            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(rabbit.getRabbitType().name()).color(NamedTextColor.YELLOW)));
         }
 
         if (e instanceof Axolotl axolotl){
@@ -114,12 +167,17 @@ public class DataManager {
 
         if (e instanceof Frog frog){
             lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(frog.getVariant().toString()).color(NamedTextColor.YELLOW)));
+                    .append(Component.text(frog.getVariant().getKey().getKey().replace('_', ' ')).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof Wolf wolf) {
+            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(wolf.getVariant().getKey().getKey()).color(NamedTextColor.YELLOW)));
         }
 
         if (e instanceof Cat cat){
             lore.add(Component.text("Type: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(cat.getType().toString()).color(NamedTextColor.YELLOW)));
+                    .append(Component.text(cat.getCatType().getKey().getKey()).color(NamedTextColor.YELLOW)));
         }
 
         if (e instanceof Parrot parrot){
@@ -150,7 +208,7 @@ public class DataManager {
                             + 2.128599134 * rawJump
                             - 0.343930367 + " blocks").color(NamedTextColor.YELLOW)));
             lore.add(Component.text("Speed: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(rawSpeed * 43.2 + " blocks/second")).color(NamedTextColor.YELLOW));
+                    .append(Component.text(rawSpeed * 43.2 + " blocks/second").color(NamedTextColor.YELLOW)));
         }
 
         if (e instanceof Horse horse) {
@@ -163,6 +221,8 @@ public class DataManager {
         if (e instanceof Llama llama){
             lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
                     .append(Component.text(llama.getColor().name()).color(NamedTextColor.YELLOW)));
+            lore.add(Component.text("Strength: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(llama.getStrength()).color(NamedTextColor.YELLOW)));
         }
 
         return lore;

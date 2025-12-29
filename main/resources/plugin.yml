@@ -1,6 +1,11 @@
 name: GetEgged
-version: '0.7.2'
+version: '0.8'
 main: io.jimbonesjim.getEgged.GetEgged
 api-version: '1.21'
 authors: [ PopTart ]
 description: Capture mobs into spawn eggs.
+commands:
+  getegged:
+    description: Gives you capture item.
+    aliases: [ge]
+    default: op

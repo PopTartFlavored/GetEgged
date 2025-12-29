@@ -40,6 +40,11 @@ public class DataLoader {
         if (hasData(PDC, COLOR, PersistentDataType.STRING)) {
             if (e instanceof Sheep sheep) {
                 sheep.setColor(DyeColor.valueOf(PDC.get(COLOR, PersistentDataType.STRING)));
+                if (hasData(PDC, SHEARED, PersistentDataType.BOOLEAN)){
+                    if (PDC.get(SHEARED, PersistentDataType.BOOLEAN)) {
+                        sheep.setSheared(true);
+                    }
+                }
             }
             if (e instanceof Llama llama) {
                 llama.setColor(Llama.Color.valueOf(PDC.get(COLOR, PersistentDataType.STRING)));
@@ -50,6 +55,31 @@ public class DataLoader {
         }
         if (e instanceof CollarColorable cce && hasData(PDC, COLLAR, PersistentDataType.STRING)){
             cce.setCollarColor(DyeColor.valueOf(PDC.get(COLLAR, PersistentDataType.STRING)));
+        }
+        if (e instanceof Creeper creeper && hasData(PDC, POWERED, PersistentDataType.BOOLEAN)) {
+            creeper.setPowered(Boolean.TRUE.equals(PDC.get(POWERED, PersistentDataType.BOOLEAN)));
+        }
+        if (e instanceof Slime slime && hasData(PDC, SIZE, PersistentDataType.INTEGER)) {
+            slime.setSize(PDC.get(SIZE,  PersistentDataType.INTEGER));
+        }
+        if (e instanceof Goat goat) {
+            if (hasData(PDC, RIGHT_HORN, PersistentDataType.BOOLEAN)){
+                goat.setRightHorn(Boolean.TRUE.equals(PDC.get(RIGHT_HORN, PersistentDataType.BOOLEAN)));
+            }
+            if (hasData(PDC, LEFT_HORN, PersistentDataType.BOOLEAN)){
+                goat.setLeftHorn(Boolean.TRUE.equals(PDC.get(LEFT_HORN, PersistentDataType.BOOLEAN)));
+            }
+        }
+        if (e instanceof Cat cat && hasData(PDC, CAT_TYPE, PersistentDataType.STRING)) {
+            loadRegistry(PDC, CAT_TYPE, RegistryAccess.registryAccess().getRegistry(RegistryKey.CAT_VARIANT), cat::setCatType);
+        }
+        if (hasData(PDC, TYPE, PersistentDataType.STRING)) {
+            if (e instanceof Fox fox) {
+                loadVariant(PDC, TYPE, Fox.Type.class, fox::setFoxType);
+            }
+            if (e instanceof Rabbit rabbit){
+                loadVariant(PDC, TYPE, Rabbit.Type.class, rabbit::setRabbitType);
+            }
         }
         if (hasData(PDC, VARIANT, PersistentDataType.STRING)) {
             if (e instanceof Chicken chicken){
@@ -64,19 +94,11 @@ public class DataLoader {
             if (e instanceof Parrot parrot) {
                 loadVariant(PDC, VARIANT, Parrot.Variant.class, parrot::setVariant);
             }
-            if (e instanceof Fox fox) {
-                loadVariant(PDC, VARIANT, Fox.Type.class, fox::setFoxType);
-            }
             if (e instanceof Axolotl axolotl) {
                 loadVariant(PDC, VARIANT, Axolotl.Variant.class, axolotl::setVariant);
             }
             if (e instanceof Frog frog){
                 loadRegistry(PDC, VARIANT, RegistryAccess.registryAccess().getRegistry(RegistryKey.FROG_VARIANT), frog::setVariant);
-            }
-            if (e instanceof Cat cat){
-                if (hasData(PDC, TYPE, PersistentDataType.STRING)) {
-                    loadRegistry(PDC, TYPE, RegistryAccess.registryAccess().getRegistry(RegistryKey.CAT_VARIANT), cat::setCatType);
-                }
             }
             if (e instanceof Panda panda) {
                 loadVariant(PDC, VARIANT, Panda.Gene.class, panda::setMainGene);
@@ -117,9 +139,9 @@ public class DataLoader {
             if (hasData(PDC, TYPE, PersistentDataType.STRING)) {
                 loadRegistry(PDC, TYPE, Registry.VILLAGER_TYPE, v::setVillagerType);
             }
-            if (hasData(PDC, PROF, PersistentDataType.STRING)) {
-                loadRegistry(PDC, PROF, Registry.VILLAGER_PROFESSION, v::setProfession);
-            }
+//            if (hasData(PDC, PROF, PersistentDataType.STRING)) {
+//                loadRegistry(PDC, PROF, Registry.VILLAGER_PROFESSION, v::setProfession);
+//            }
         }
     }
 
@@ -162,5 +184,4 @@ public class DataLoader {
             setter.accept(value);
         } catch (IllegalArgumentException ignored) {}
     }
-
 }

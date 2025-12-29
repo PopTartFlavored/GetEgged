@@ -1,0 +1,4 @@
+capture-item:
+  material: BLAZE_ROD
+  name: "Mob Capture Tool"
+  lore: "Right click me on a mob to turn it into a spawn egg."

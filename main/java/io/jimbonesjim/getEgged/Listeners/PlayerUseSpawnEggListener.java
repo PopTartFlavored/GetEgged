@@ -12,11 +12,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
-public class EntitySpawnListener implements Listener {
+public class PlayerUseSpawnEggListener implements Listener {
 
     private final DataManager dataManager;
 
-    public EntitySpawnListener(DataManager dataManager){
+    public PlayerUseSpawnEggListener(DataManager dataManager){
         this.dataManager = dataManager;
     }
     @EventHandler
@@ -24,7 +24,7 @@ public class EntitySpawnListener implements Listener {
         if (e.getAction().isLeftClick()) return;
         Player p = e.getPlayer();
         ItemStack egg = p.getInventory().getItemInMainHand();
-        if (!egg.getType().toString().endsWith("_SPAWN_EGG")) return;
+        if (!egg.getType().name().endsWith("_SPAWN_EGG")) return;
         if (!dataManager.fromGetEgged(egg.getItemMeta())) return;
         if (!(egg.getItemMeta() instanceof SpawnEggMeta eggMeta)) return;
         e.setCancelled(true);
