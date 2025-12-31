@@ -86,8 +86,10 @@ public class DataSaver {
     }
 
     private void saveAbstractHorseData(AbstractHorse ah, PersistentDataContainer PDC){
-        PDC.set(JUMP, PersistentDataType.DOUBLE, ah.getJumpStrength());
-        PDC.set(SPEED, PersistentDataType.DOUBLE, ah.getAttribute(Attribute.MOVEMENT_SPEED).getValue());
+        if (!(ah instanceof Llama)) {
+            PDC.set(JUMP, PersistentDataType.DOUBLE, ah.getJumpStrength());
+            PDC.set(SPEED, PersistentDataType.DOUBLE, ah.getAttribute(Attribute.MOVEMENT_SPEED).getValue());
+        }
         if (ah instanceof Horse horse){
             PDC.set(COLOR, PersistentDataType.STRING, horse.getColor().name());
             PDC.set(STYLE, PersistentDataType.STRING, horse.getStyle().name());

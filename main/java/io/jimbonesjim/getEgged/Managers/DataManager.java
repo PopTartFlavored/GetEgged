@@ -5,11 +5,14 @@ import io.jimbonesjim.getEgged.API.DataSaver;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -43,6 +46,11 @@ public class DataManager {
     public static NamespacedKey CAT_TYPE;
     private static DataSaver SAVER;
     private static DataLoader LOADER;
+    final private JavaPlugin PLUGIN;
+
+    public DataManager(JavaPlugin plugin) {
+        PLUGIN = plugin;
+    }
 
     public static void init(JavaPlugin plugin){
         GETEGGED = new NamespacedKey(plugin, "getegged");
@@ -95,6 +103,45 @@ public class DataManager {
 
     public boolean hasItems(InventoryHolder ih){
         return ih.getInventory() != null && !ih.getInventory().isEmpty();
+    }
+
+    public ItemStack createCaptureItem(){
+        //Checks for material type in config and sets it to default if not set.
+        Material mat = Material.getMaterial(PLUGIN.getConfig().getString("capture-item.material"));
+        ItemStack capture_tool = new ItemStack(mat != null ? mat : Material.STICK);
+
+        ItemMeta meta = capture_tool.getItemMeta();
+        PersistentDataContainer PDC = meta.getPersistentDataContainer();
+
+        // Set PDC for being created by GetEgged
+        PDC.set(CAPTURE_TOOL, PersistentDataType.BOOLEAN, true);
+
+        //Checks for enchant-glow boolean in config and sets it to default if not set
+        boolean glow = PLUGIN.getConfig().getBoolean(
+                "capture-item.enchant-glow",
+                true // default value
+        );
+        meta.setEnchantmentGlintOverride(glow);
+
+        //Checks for name in config and sets it to default if not set.
+        String customName = PLUGIN.getConfig().getString(
+                "capture-item.custom-name",
+                "Mob Capture Tool" // default value
+        );
+        meta.customName(Component.text(customName).color(NamedTextColor.YELLOW));
+
+        //Checks for lore in config and sets it to default if not set.
+        List<Component> lore = new ArrayList<>();
+        String loreText = PLUGIN.getConfig().getString(
+                "capture-item.lore",
+                "Right click me on a mob to capture it!" // default value
+        );
+        lore.add(Component.text(loreText).color(NamedTextColor.YELLOW));
+
+        //sets lore and item meta then gives item to player
+        meta.lore(lore);
+        capture_tool.setItemMeta(meta);
+        return capture_tool;
     }
 
     public List<Component> setLore(Entity e){
@@ -151,7 +198,7 @@ public class DataManager {
         }
 
         if (e instanceof Fox fox){
-            lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
+            lore.add(Component.text("Type: ").color(NamedTextColor.WHITE)
                     .append(Component.text(fox.getFoxType().name()).color(NamedTextColor.YELLOW)));
         }
 
@@ -177,7 +224,7 @@ public class DataManager {
 
         if (e instanceof Cat cat){
             lore.add(Component.text("Type: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(cat.getCatType().getKey().getKey()).color(NamedTextColor.YELLOW)));
+                    .append(Component.text(cat.getCatType().getKey().getKey().replace('_', ' ')).color(NamedTextColor.YELLOW)));
         }
 
         if (e instanceof Parrot parrot){
@@ -198,17 +245,24 @@ public class DataManager {
             lore.add(Component.text("Color: ").color(NamedTextColor.WHITE).append(Component.text(tf.getBodyColor().toString()).color(dyeToTextColor(tf.getBodyColor()))));
         }
 
-        if (e instanceof AbstractHorse ah){
+        if (e instanceof Villager v){
+            lore.add(Component.text("Type: ").color(NamedTextColor.WHITE)
+                    .append(Component.text(v.getVillagerType().getKey().getKey()).color(NamedTextColor.YELLOW)));
+        }
+
+        if (e instanceof AbstractHorse ah && !(ah instanceof Llama)){
             double rawSpeed = ah.getAttribute(Attribute.MOVEMENT_SPEED).getValue();
             double rawJump = ah.getJumpStrength();
+            double speed = rawSpeed * 43.2;
+            double jump = -0.1817584952 * Math.pow(rawJump, 3)
+                    + 3.689713992 * Math.pow(rawJump, 2)
+                    + 2.128599134 * rawJump
+                    - 0.343930367;
 
             lore.add(Component.text("Jump: ").color(NamedTextColor.WHITE)
-                    .append(Component.text( -0.1817584952 * Math.pow(rawJump, 3)
-                            + 3.689713992 * Math.pow(rawJump, 2)
-                            + 2.128599134 * rawJump
-                            - 0.343930367 + " blocks").color(NamedTextColor.YELLOW)));
+                    .append(Component.text( String.format("%.2f", jump) + " blocks").color(NamedTextColor.YELLOW)));
             lore.add(Component.text("Speed: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(rawSpeed * 43.2 + " blocks/second").color(NamedTextColor.YELLOW)));
+                    .append(Component.text(String.format("%.2f", speed) + " blocks/second").color(NamedTextColor.YELLOW)));
         }
 
         if (e instanceof Horse horse) {
