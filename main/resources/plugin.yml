@@ -1,5 +1,5 @@
 name: GetEgged
-version: '0.8.2'
+version: '0.8.3'
 main: io.jimbonesjim.getEgged.GetEgged
 api-version: '1.21'
 authors: [ PopTart_Flavored ]
@@ -18,6 +18,8 @@ permissions:
   getegged.give:
     default: op
   getegged.reload:
+    default: op
+  getegged.tamed:
     default: op
   getegged.animal.*:
     default: op

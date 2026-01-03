@@ -1,5 +1,9 @@
 capture-item:
-  material: BLAZE_ROD
+  material: SLIME_BALL
   name: "Mob Capture Tool"
   lore: "Right click me on a mob to turn it into a spawn egg."
   enchant-glow: true
+
+capture:
+  # true/false for everyone to be able to capture other players tamed mobs.
+  allow-tamed-capture: false

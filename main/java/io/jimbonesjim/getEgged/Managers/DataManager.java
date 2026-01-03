@@ -5,7 +5,6 @@ import io.jimbonesjim.getEgged.API.DataSaver;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
@@ -46,10 +45,10 @@ public class DataManager {
     public static NamespacedKey CAT_TYPE;
     private static DataSaver SAVER;
     private static DataLoader LOADER;
-    final private JavaPlugin PLUGIN;
+    final private ConfigManager configManager;
 
-    public DataManager(JavaPlugin plugin) {
-        PLUGIN = plugin;
+    public DataManager(ConfigManager configManager) {
+        this.configManager = configManager;
     }
 
     public static void init(JavaPlugin plugin){
@@ -106,37 +105,19 @@ public class DataManager {
     }
 
     public ItemStack createCaptureItem(){
-        //Checks for material type in config and sets it to default if not set.
-        Material mat = Material.getMaterial(PLUGIN.getConfig().getString("capture-item.material"));
-        ItemStack capture_tool = new ItemStack(mat != null ? mat : Material.STICK);
+        ItemStack capture_tool = new ItemStack(configManager.getItemMaterial());
 
         ItemMeta meta = capture_tool.getItemMeta();
         PersistentDataContainer PDC = meta.getPersistentDataContainer();
 
-        // Set PDC for being created by GetEgged
         PDC.set(CAPTURE_TOOL, PersistentDataType.BOOLEAN, true);
 
-        //Checks for enchant-glow boolean in config and sets it to default if not set
-        boolean glow = PLUGIN.getConfig().getBoolean(
-                "capture-item.enchant-glow",
-                true // default value
-        );
-        meta.setEnchantmentGlintOverride(glow);
+        meta.setEnchantmentGlintOverride(configManager.getItemGlow());
 
-        //Checks for name in config and sets it to default if not set.
-        String customName = PLUGIN.getConfig().getString(
-                "capture-item.custom-name",
-                "Mob Capture Tool" // default value
-        );
-        meta.customName(Component.text(customName).color(NamedTextColor.YELLOW));
+        meta.customName(Component.text(configManager.getItemName()).color(NamedTextColor.YELLOW));
 
-        //Checks for lore in config and sets it to default if not set.
         List<Component> lore = new ArrayList<>();
-        String loreText = PLUGIN.getConfig().getString(
-                "capture-item.lore",
-                "Right click me on a mob to capture it!" // default value
-        );
-        lore.add(Component.text(loreText).color(NamedTextColor.YELLOW));
+        lore.add(Component.text(configManager.getItemLore()).color(NamedTextColor.YELLOW));
 
         //sets lore and item meta then gives item to player
         meta.lore(lore);
@@ -183,8 +164,8 @@ public class DataManager {
                     .append(Component.text(String.valueOf(sheep.getColor()))
                             .color(dyeToTextColor(sheep.getColor()))));
             lore.add(Component.text("Sheared: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(!sheep.readyToBeSheared() ? "Yes" : "No")
-                            .color(!sheep.readyToBeSheared() ? NamedTextColor.GREEN : NamedTextColor.RED)));
+                    .append(Component.text(sheep.isSheared() ? "Yes" : "No")
+                            .color(sheep.isSheared() ? NamedTextColor.GREEN : NamedTextColor.RED)));
         }
 
         if (e instanceof Creeper creeper){

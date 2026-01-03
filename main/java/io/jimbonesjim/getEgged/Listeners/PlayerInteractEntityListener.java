@@ -1,5 +1,6 @@
 package io.jimbonesjim.getEgged.Listeners;
 
+import io.jimbonesjim.getEgged.Managers.ConfigManager;
 import io.jimbonesjim.getEgged.Managers.DataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -17,9 +18,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class PlayerInteractEntityListener implements Listener {
 
     private final DataManager dataManager;
+    private final ConfigManager configManager;
 
-    public PlayerInteractEntityListener(DataManager dataManager){
+    public PlayerInteractEntityListener(DataManager dataManager, ConfigManager configManager) {
         this.dataManager = dataManager;
+        this.configManager = configManager;
     }
 
     @EventHandler
@@ -33,46 +36,56 @@ public class PlayerInteractEntityListener implements Listener {
         }
         if (!dataManager.isMobCaptureItem(mainHand.getItemMeta())) return;
 
+        if (entity instanceof Tameable te){
+            boolean allowOthers = configManager.getCaptureTamed();
+
+            if (te.isTamed() && te.getOwnerUniqueId() != null &&
+                    !p.getUniqueId().equals(te.getOwnerUniqueId()) && !allowOthers && !p.hasPermission("getegged.tamed")){
+                p.sendMessage(Component.text("You cannot egg someone else's " + entity.getType().name()).color(NamedTextColor.RED));
+                return;
+            }
+        }
+
         switch (entity) {
             case Animals animal -> {
                 if (!p.hasPermission("getegged.animal." + animal.getType()) && !p.hasPermission("getegged.animal.*")) {
-                    p.sendMessage(Component.text("You do not have permission to egg a " + entity.getType()).color(NamedTextColor.RED));
+                    p.sendMessage(Component.text("You do not have permission to egg a " + entity.getType().name()).color(NamedTextColor.RED));
                     return;
                 }
             }
             case Monster monster -> {
                 if (!p.hasPermission("getegged.monster." + monster.getType()) && !p.hasPermission("getegged.monster.*")) {
-                    p.sendMessage(Component.text("You do not have permission to egg a " + monster.getType()).color(NamedTextColor.RED));
+                    p.sendMessage(Component.text("You do not have permission to egg a " + monster.getType().name()).color(NamedTextColor.RED));
                     return;
                 }
             }
             case Enemy enemy -> {
                 if (!p.hasPermission("getegged.monster." + enemy.getType()) && !p.hasPermission("getegged.monster.*")) {
-                    p.sendMessage(Component.text("You do not have permission to egg a " + enemy.getType()).color(NamedTextColor.RED));
+                    p.sendMessage(Component.text("You do not have permission to egg a " + enemy.getType().name()).color(NamedTextColor.RED));
                     return;
                 }
             }
             case AbstractVillager abstractVillager -> {
                 if (!p.hasPermission("getegged.villager")) {
-                    p.sendMessage(Component.text("You do not have permission to egg a " + abstractVillager.getType()).color(NamedTextColor.RED));
+                    p.sendMessage(Component.text("You do not have permission to egg a " + abstractVillager.getType().name()).color(NamedTextColor.RED));
                     return;
                 }
             }
             case Ambient ambient -> {
                     if (!p.hasPermission("getegged.animal." + ambient.getType()) && !p.hasPermission("getegged.animal.*")) {
-                        p.sendMessage(Component.text("You do not have permission to egg a " + ambient.getType()).color(NamedTextColor.RED));
+                        p.sendMessage(Component.text("You do not have permission to egg a " + ambient.getType().name()).color(NamedTextColor.RED));
                         return;
                     }
             }
             case WaterMob watermob -> {
                 if (!p.hasPermission("getegged.animal." + watermob.getType()) && !p.hasPermission("getegged.animal.*")) {
-                    p.sendMessage(Component.text("You do not have permission to egg a " + watermob.getType()).color(NamedTextColor.RED));
+                    p.sendMessage(Component.text("You do not have permission to egg a " + watermob.getType().name()).color(NamedTextColor.RED));
                     return;
                 }
             }
             case Golem golem -> {
                 if (!p.hasPermission("getegged.golem." + golem.getType()) && !p.hasPermission("getegged.golem.*")) {
-                    p.sendMessage(Component.text("You do not have permission to egg a " + golem.getType()).color(NamedTextColor.RED));
+                    p.sendMessage(Component.text("You do not have permission to egg a " + golem.getType().name()).color(NamedTextColor.RED));
                     return;
                 }
             }

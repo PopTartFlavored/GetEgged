@@ -15,7 +15,7 @@ public class DataSaver {
 
     public ItemMeta saveData(Entity e, ItemMeta meta){
         PersistentDataContainer PDC = meta.getPersistentDataContainer();
-        PDC.set(GETEGGED, PersistentDataType.BOOLEAN, Boolean.TRUE);
+        PDC.set(GETEGGED, PersistentDataType.BOOLEAN, true);
         if (e.customName() != null) saveName(e, PDC);
         if (e instanceof Tameable te) saveOwner(te, PDC);
         if (e instanceof Ageable ae) saveBaby(ae, PDC);

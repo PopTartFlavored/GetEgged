@@ -1,5 +1,6 @@
 package io.jimbonesjim.getEgged.Commands;
 
+import io.jimbonesjim.getEgged.Managers.ConfigManager;
 import io.jimbonesjim.getEgged.Managers.DataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -7,19 +8,18 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import static org.bukkit.Bukkit.getPlayer;
 
 public class GeteggedCommands implements CommandExecutor {
 
-    private final DataManager DATAMANAGER;
-    private final JavaPlugin PLUGIN;
+    private final DataManager dataManager;
+    private final ConfigManager configManager;
 
-    public GeteggedCommands(JavaPlugin plugin, DataManager dataManager) {
-        PLUGIN = plugin;
-        DATAMANAGER = dataManager;
+    public GeteggedCommands(DataManager dataManager, ConfigManager configManager) {
+        this.dataManager = dataManager;
+        this.configManager = configManager;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class GeteggedCommands implements CommandExecutor {
                     sender.sendMessage(Component.text("You do not have permission to use this command").color(NamedTextColor.RED));
                     return true;
                 }
-                PLUGIN.reloadConfig();
+                configManager.reloadConfig();
                 sender.sendMessage(Component.text("[GetEgged] Config reloaded!").color(NamedTextColor.GREEN));
                 break;
             case "get":
@@ -49,7 +49,7 @@ public class GeteggedCommands implements CommandExecutor {
                     p.sendMessage(Component.text("You are not allowed to use this command!").color(NamedTextColor.RED));
                     return true;
                 }
-                p.give(DATAMANAGER.createCaptureItem());
+                p.give(dataManager.createCaptureItem());
                 break;
             case "give":
                 if (!sender.hasPermission("getegged.give")){
@@ -65,7 +65,7 @@ public class GeteggedCommands implements CommandExecutor {
                     sender.sendMessage(Component.text("Player " + args[1] + " not found!").color(NamedTextColor.RED));
                     return true;
                 }
-                target.give(DATAMANAGER.createCaptureItem());
+                target.give(dataManager.createCaptureItem());
                 sender.sendMessage(Component.text("Gave a Capture Tool to " + target.getName()).color(NamedTextColor.GREEN));
                 break;
             default:
