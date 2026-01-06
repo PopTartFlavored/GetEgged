@@ -48,6 +48,8 @@ Villager profession and trades are not yet restored.
 
 `getegged.villager` - Allows egging of villagers
 
+`getegged.tamed` - Allows egging of tamed animals owned by other players
+
 `getegged.get` - Allows use of `/getegged get`
   
 `getegged.give` - Allows use of `/getegged give <player>`
