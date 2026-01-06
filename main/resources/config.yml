@@ -1,9 +1,33 @@
-capture-item:
+egging-item:
   material: SLIME_BALL
-  name: "Mob Capture Tool"
+  name: "Egging Tool"
   lore: "Right click me on a mob to turn it into a spawn egg."
   enchant-glow: true
 
-capture:
-  # true/false for everyone to be able to capture other players tamed mobs.
-  allow-tamed-capture: false
+  usage:
+    # NONE = Unlimited uses on egging tool
+    # CONSUME = One use per egging tool
+    # DURABILITY = Set number of uses on egging tool
+    mode: NONE # DURABILITY | CONSUME | NONE
+
+    # Only used when mode is set to DURABILITY ignored otherwise
+    durability:
+      max-uses: 25
+
+
+egging:
+  # true/false for everyone to be able to egg other players tamed mobs.
+  allow-tamed-egging: false
+
+  economy:
+    enabled: false
+    # Default/fallback price
+    default-price: 100.00
+    # Price of entities using animal permissions
+    animals-price: 100.00
+    # Price of entities using monster permissions
+    monsters-price: 500.00
+    # Price of entities using golem permissions
+    golems-price: 250.00
+    # Price of entities using villager permission
+    villager-price: 250.00

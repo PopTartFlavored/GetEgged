@@ -2,79 +2,24 @@ package io.jimbonesjim.getEgged.Managers;
 
 import io.jimbonesjim.getEgged.API.DataLoader;
 import io.jimbonesjim.getEgged.API.DataSaver;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.DyeColor;
-import org.bukkit.NamespacedKey;
-import org.bukkit.attribute.Attribute;
+import io.jimbonesjim.getEgged.Services.LoreBuilder;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.List;
+import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.GETEGGED;
 
 public class DataManager {
 
-    public static NamespacedKey GETEGGED;
-    public static NamespacedKey CAPTURE_TOOL;
-    public static NamespacedKey NAME;
-    public static NamespacedKey JUMP;
-    public static NamespacedKey SPEED;
-    public static NamespacedKey COLOR;
-    public static NamespacedKey STYLE;
-    public static NamespacedKey BABY;
-    public static NamespacedKey PROF;
-    public static NamespacedKey TYPE;
-    public static NamespacedKey LEVEL;
-    public static NamespacedKey OWNER;
-    public static NamespacedKey COLLAR;
-    public static NamespacedKey VARIANT;
-    public static NamespacedKey PATTERN;
-    public static NamespacedKey VARIANT2;
-    public static NamespacedKey STRENGTH;
-    public static NamespacedKey SHEARED;
-    public static NamespacedKey POWERED;
-    public static NamespacedKey SIZE;
-    public static NamespacedKey RIGHT_HORN;
-    public static NamespacedKey LEFT_HORN;
-    public static NamespacedKey CAT_TYPE;
     private static DataSaver SAVER;
     private static DataLoader LOADER;
-    final private ConfigManager configManager;
+    private final LoreBuilder loreBuilder;
 
-    public DataManager(ConfigManager configManager) {
-        this.configManager = configManager;
+    public DataManager(LoreBuilder loreBuilder) {
+        this.loreBuilder = loreBuilder;
     }
 
-    public static void init(JavaPlugin plugin){
-        GETEGGED = new NamespacedKey(plugin, "getegged");
-        CAPTURE_TOOL = new NamespacedKey(plugin, "capture_tool");
-        NAME = new NamespacedKey(plugin, "name");
-        JUMP = new NamespacedKey(plugin, "jump");
-        SPEED = new NamespacedKey(plugin, "speed");
-        COLOR = new NamespacedKey(plugin, "color");
-        STYLE = new NamespacedKey(plugin, "style");
-        BABY = new NamespacedKey(plugin, "baby");
-        PROF = new NamespacedKey(plugin, "profession");
-        TYPE = new NamespacedKey(plugin, "type");
-        LEVEL = new NamespacedKey(plugin, "level");
-        OWNER = new NamespacedKey(plugin, "owner");
-        COLLAR = new NamespacedKey(plugin, "collar");
-        VARIANT = new NamespacedKey(plugin, "variant");
-        VARIANT2 = new NamespacedKey(plugin, "variant2");
-        PATTERN = new NamespacedKey(plugin, "pattern");
-        STRENGTH = new NamespacedKey(plugin, "strength");
-        SHEARED = new NamespacedKey(plugin, "sheared");
-        POWERED = new NamespacedKey(plugin, "powered");
-        SIZE = new NamespacedKey(plugin, "size");
-        RIGHT_HORN = new NamespacedKey(plugin, "right_horn");
-        LEFT_HORN = new NamespacedKey(plugin, "left_horn");
-        CAT_TYPE = new NamespacedKey(plugin, "cat_type");
+    public static void init(){
         SAVER = new DataSaver();
         LOADER = new DataLoader();
     }
@@ -84,200 +29,13 @@ public class DataManager {
                 meta.getPersistentDataContainer().has(GETEGGED, PersistentDataType.BOOLEAN);
     }
 
-    public boolean isMobCaptureItem(ItemMeta meta){
-        return meta != null &&
-                meta.getPersistentDataContainer().has(CAPTURE_TOOL, PersistentDataType.BOOLEAN);
-
-    }
-
     public ItemMeta entityToEgg(Entity e, ItemMeta meta){
         meta = SAVER.saveData(e, meta);
-        meta.lore(setLore(e));
+        meta.lore(loreBuilder.build(e));
         return meta;
     }
 
     public void eggToEntity(Entity e, ItemMeta meta){
         LOADER.loadData(meta, e);
-    }
-
-    public boolean hasItems(InventoryHolder ih){
-        return ih.getInventory() != null && !ih.getInventory().isEmpty();
-    }
-
-    public ItemStack createCaptureItem(){
-        ItemStack capture_tool = new ItemStack(configManager.getItemMaterial());
-
-        ItemMeta meta = capture_tool.getItemMeta();
-        PersistentDataContainer PDC = meta.getPersistentDataContainer();
-
-        PDC.set(CAPTURE_TOOL, PersistentDataType.BOOLEAN, true);
-
-        meta.setEnchantmentGlintOverride(configManager.getItemGlow());
-
-        meta.customName(Component.text(configManager.getItemName()).color(NamedTextColor.YELLOW));
-
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.text(configManager.getItemLore()).color(NamedTextColor.YELLOW));
-
-        //sets lore and item meta then gives item to player
-        meta.lore(lore);
-        capture_tool.setItemMeta(meta);
-        return capture_tool;
-    }
-
-    public List<Component> setLore(Entity e){
-        List<Component> lore = new ArrayList<>();
-
-        lore.add(Component.text("GetEgged Data").color(NamedTextColor.GRAY));
-        lore.add(Component.text("────────────").color(NamedTextColor.DARK_GRAY));
-
-        if (e.customName() != null) {
-            lore.add(Component.text("Name: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(e.getName()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Ageable ae) {
-            lore.add(Component.text("Baby: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(!ae.isAdult() ? "Yes" : "No")
-                            .color(!ae.isAdult() ? NamedTextColor.GREEN : NamedTextColor.RED)));
-        }
-
-        if (e instanceof Tameable te) {
-            if (te.getOwner() != null) {
-                lore.add(Component.text("Owner: ").color(NamedTextColor.WHITE)
-                        .append(Component.text(te.getOwner().getName()).color(NamedTextColor.YELLOW)));
-            }
-        }
-
-        if (e instanceof Pig pig) {
-            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(pig.getVariant().getKey().getKey()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Chicken chicken) {
-            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(chicken.getVariant().getKey().getKey()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Sheep sheep){
-            lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(String.valueOf(sheep.getColor()))
-                            .color(dyeToTextColor(sheep.getColor()))));
-            lore.add(Component.text("Sheared: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(sheep.isSheared() ? "Yes" : "No")
-                            .color(sheep.isSheared() ? NamedTextColor.GREEN : NamedTextColor.RED)));
-        }
-
-        if (e instanceof Creeper creeper){
-            lore.add(Component.text("Powered: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(creeper.isPowered() ? "Yes" : "No").color(creeper.isPowered() ? NamedTextColor.GREEN : NamedTextColor.RED)));
-        }
-
-        if (e instanceof Slime slime){
-            lore.add(Component.text("Size: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(slime.getSize()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Fox fox){
-            lore.add(Component.text("Type: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(fox.getFoxType().name()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Rabbit rabbit){
-            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(rabbit.getRabbitType().name()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Axolotl axolotl){
-            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(axolotl.getVariant().name()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Frog frog){
-            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(frog.getVariant().getKey().getKey().replace('_', ' ')).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Wolf wolf) {
-            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(wolf.getVariant().getKey().getKey()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Cat cat){
-            lore.add(Component.text("Type: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(cat.getCatType().getKey().getKey().replace('_', ' ')).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Parrot parrot){
-            lore.add(Component.text("Variant: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(parrot.getVariant().name()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Panda panda){
-            lore.add(Component.text("Main Gene: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(panda.getMainGene().name()).color(NamedTextColor.YELLOW)));
-            lore.add(Component.text("Hidden Gene: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(panda.getHiddenGene().name()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof TropicalFish tf){
-            lore.add(Component.text("Pattern: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(tf.getPattern().toString()).color(NamedTextColor.YELLOW)));
-            lore.add(Component.text("Color: ").color(NamedTextColor.WHITE).append(Component.text(tf.getBodyColor().toString()).color(dyeToTextColor(tf.getBodyColor()))));
-        }
-
-        if (e instanceof Villager v){
-            lore.add(Component.text("Type: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(v.getVillagerType().getKey().getKey()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof AbstractHorse ah && !(ah instanceof Llama)){
-            double rawSpeed = ah.getAttribute(Attribute.MOVEMENT_SPEED).getValue();
-            double rawJump = ah.getJumpStrength();
-            double speed = rawSpeed * 43.2;
-            double jump = -0.1817584952 * Math.pow(rawJump, 3)
-                    + 3.689713992 * Math.pow(rawJump, 2)
-                    + 2.128599134 * rawJump
-                    - 0.343930367;
-
-            lore.add(Component.text("Jump: ").color(NamedTextColor.WHITE)
-                    .append(Component.text( String.format("%.2f", jump) + " blocks").color(NamedTextColor.YELLOW)));
-            lore.add(Component.text("Speed: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(String.format("%.2f", speed) + " blocks/second").color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Horse horse) {
-            lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(horse.getColor().toString()).color(NamedTextColor.YELLOW)));
-            lore.add(Component.text("Style: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(horse.getStyle().toString()).color(NamedTextColor.YELLOW)));
-        }
-
-        if (e instanceof Llama llama){
-            lore.add(Component.text("Color: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(llama.getColor().name()).color(NamedTextColor.YELLOW)));
-            lore.add(Component.text("Strength: ").color(NamedTextColor.WHITE)
-                    .append(Component.text(llama.getStrength()).color(NamedTextColor.YELLOW)));
-        }
-
-        return lore;
-    }
-
-    private NamedTextColor dyeToTextColor(DyeColor dye) {
-        return switch (dye) {
-            case WHITE -> NamedTextColor.WHITE;
-            case ORANGE, BROWN -> NamedTextColor.GOLD;
-            case MAGENTA, PINK -> NamedTextColor.LIGHT_PURPLE;
-            case LIGHT_BLUE -> NamedTextColor.AQUA;
-            case YELLOW -> NamedTextColor.YELLOW;
-            case LIME -> NamedTextColor.GREEN;
-            case GRAY, BLACK -> NamedTextColor.DARK_GRAY;
-            case LIGHT_GRAY -> NamedTextColor.GRAY;
-            case CYAN -> NamedTextColor.DARK_AQUA;
-            case PURPLE -> NamedTextColor.DARK_PURPLE;
-            case BLUE -> NamedTextColor.BLUE;
-            case GREEN -> NamedTextColor.DARK_GREEN;
-            case RED -> NamedTextColor.RED;
-        };
     }
 }

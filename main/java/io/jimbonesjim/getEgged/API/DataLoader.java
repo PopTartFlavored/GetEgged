@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -14,8 +15,9 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static io.jimbonesjim.getEgged.Managers.DataManager.*;
 import static org.bukkit.Bukkit.getOfflinePlayer;
+import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.EntityKeys.*;
+import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.HorseKeys.*;
 
 public class DataLoader {
 
@@ -120,6 +122,16 @@ public class DataLoader {
             }
         }
         if (e instanceof AbstractHorse ah){
+            if (hasData(PDC, SADDLED, PersistentDataType.BOOLEAN)) {
+                if (Boolean.TRUE.equals(PDC.get(SADDLED, PersistentDataType.BOOLEAN))) {
+                    ah.getInventory().setSaddle(new ItemStack(Material.SADDLE));
+                }
+            }
+            if (ah instanceof ChestedHorse chestedHorse) {
+                if (hasData(PDC, CHESTED, PersistentDataType.BOOLEAN)) {
+                    chestedHorse.setCarryingChest(true);
+                }
+            }
             if (hasData(PDC, SPEED, PersistentDataType.DOUBLE)) {
                 ah.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(PDC.get(SPEED, PersistentDataType.DOUBLE));
             }
@@ -129,10 +141,13 @@ public class DataLoader {
         }
         if (e instanceof Horse horse) {
             if (hasData(PDC, COLOR, PersistentDataType.STRING)) {
-                        horse.setColor(Horse.Color.valueOf(PDC.get(COLOR, PersistentDataType.STRING)));
+                horse.setColor(Horse.Color.valueOf(PDC.get(COLOR, PersistentDataType.STRING)));
             }
             if (hasData(PDC, STYLE, PersistentDataType.STRING)) {
-                        horse.setStyle(Horse.Style.valueOf(PDC.get(STYLE, PersistentDataType.STRING)));
+                horse.setStyle(Horse.Style.valueOf(PDC.get(STYLE, PersistentDataType.STRING)));
+            }
+            if (hasData(PDC, ARMOR, PersistentDataType.STRING)) {
+                horse.getInventory().setArmor(new ItemStack(Material.getMaterial(PDC.get(ARMOR, PersistentDataType.STRING))));
             }
         }
         if (e instanceof Villager v){

@@ -1,13 +1,14 @@
 name: GetEgged
-version: '0.8.3'
+version: '0.9'
 main: io.jimbonesjim.getEgged.GetEgged
 api-version: '1.21'
 authors: [ PopTart_Flavored ]
-description: Capture mobs into spawn eggs while preserving mob data.
+description: Egg mobs into spawn eggs while preserving mob data.
+softdepend: [Vault]
 
 commands:
   getegged:
-    description: Gives you capture item.
+    description: Gives you egging tool.
     aliases: [ge]
     default: op
     usage: /<command> <get/reload/give>
@@ -20,6 +21,8 @@ permissions:
   getegged.reload:
     default: op
   getegged.tamed:
+    default: op
+  getegged.usagebypass:
     default: op
   getegged.animal.*:
     default: op

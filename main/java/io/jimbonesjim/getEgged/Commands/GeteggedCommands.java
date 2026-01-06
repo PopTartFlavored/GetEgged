@@ -1,7 +1,7 @@
 package io.jimbonesjim.getEgged.Commands;
 
 import io.jimbonesjim.getEgged.Managers.ConfigManager;
-import io.jimbonesjim.getEgged.Managers.DataManager;
+import io.jimbonesjim.getEgged.Managers.EggingToolManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -14,11 +14,11 @@ import static org.bukkit.Bukkit.getPlayer;
 
 public class GeteggedCommands implements CommandExecutor {
 
-    private final DataManager dataManager;
+    private final EggingToolManager eggingToolManager;
     private final ConfigManager configManager;
 
-    public GeteggedCommands(DataManager dataManager, ConfigManager configManager) {
-        this.dataManager = dataManager;
+    public GeteggedCommands(EggingToolManager eggingToolManager, ConfigManager configManager) {
+        this.eggingToolManager = eggingToolManager;
         this.configManager = configManager;
     }
 
@@ -49,7 +49,7 @@ public class GeteggedCommands implements CommandExecutor {
                     p.sendMessage(Component.text("You are not allowed to use this command!").color(NamedTextColor.RED));
                     return true;
                 }
-                p.give(dataManager.createCaptureItem());
+                p.give(eggingToolManager.createTool());
                 break;
             case "give":
                 if (!sender.hasPermission("getegged.give")){
@@ -65,7 +65,7 @@ public class GeteggedCommands implements CommandExecutor {
                     sender.sendMessage(Component.text("Player " + args[1] + " not found!").color(NamedTextColor.RED));
                     return true;
                 }
-                target.give(dataManager.createCaptureItem());
+                target.give(eggingToolManager.createTool());
                 sender.sendMessage(Component.text("Gave a Capture Tool to " + target.getName()).color(NamedTextColor.GREEN));
                 break;
             default:

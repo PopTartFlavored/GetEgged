@@ -5,11 +5,15 @@ import io.papermc.paper.entity.Shearable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import static io.jimbonesjim.getEgged.Managers.DataManager.*;
+import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.*;
+import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.EntityKeys.*;
+import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.HorseKeys.*;
+import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.VillagerKeys.*;
 
 public class DataSaver {
 
@@ -86,6 +90,12 @@ public class DataSaver {
     }
 
     private void saveAbstractHorseData(AbstractHorse ah, PersistentDataContainer PDC){
+        PDC.set(SADDLED, PersistentDataType.BOOLEAN, ah.getInventory().getSaddle() != null);
+        if (ah instanceof ChestedHorse chestedHorse) {
+            if (chestedHorse.isCarryingChest()){
+                PDC.set(CHESTED, PersistentDataType.BOOLEAN, chestedHorse.isCarryingChest());
+            }
+        }
         if (!(ah instanceof Llama)) {
             PDC.set(JUMP, PersistentDataType.DOUBLE, ah.getJumpStrength());
             PDC.set(SPEED, PersistentDataType.DOUBLE, ah.getAttribute(Attribute.MOVEMENT_SPEED).getValue());
@@ -93,6 +103,9 @@ public class DataSaver {
         if (ah instanceof Horse horse){
             PDC.set(COLOR, PersistentDataType.STRING, horse.getColor().name());
             PDC.set(STYLE, PersistentDataType.STRING, horse.getStyle().name());
+            if (horse.getInventory().getArmor() != null) {
+                PDC.set(ARMOR, PersistentDataType.STRING, horse.getInventory().getArmor().getType().name());
+            }
         }
         if (ah instanceof Llama llama){
             PDC.set(COLOR, PersistentDataType.STRING, llama.getColor().name());
