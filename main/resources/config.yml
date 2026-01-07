@@ -21,6 +21,10 @@ egging:
 
   economy:
     enabled: false
+
+    # Price of using '/getegged get'
+    get-command-price: 1000.00
+
     # Default/fallback price
     default-price: 100.00
     # Price of entities using animal permissions
@@ -31,3 +35,5 @@ egging:
     golems-price: 250.00
     # Price of entities using villager permission
     villager-price: 250.00
+    # Price of Boss entities. WITHER and ENDERDRAGON
+    boss-price: 10000.00

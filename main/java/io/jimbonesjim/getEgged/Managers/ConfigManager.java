@@ -19,11 +19,13 @@ public class ConfigManager {
     private boolean toolGlow;
     private UsageMode usageMode;
     private int maxUses;
+    private double toolPrice;
     private double defaultPrice;
     private double animalsPrice;
     private double monstersPrice;
     private double golemsPrice;
     private double villagerPrice;
+    private double bossPrice;
     private boolean eggTamed;
     private boolean economyEnabled;
 
@@ -84,15 +86,19 @@ public class ConfigManager {
 
         economyEnabled = CONFIG.getBoolean("egging.economy.enabled", false);
 
-        defaultPrice = CONFIG.getDouble("egging.economy.default-price", 100);
+        toolPrice = CONFIG.getDouble("egging.economy.get-command-price", 1000.00);
 
-        animalsPrice = CONFIG.getDouble("egging.economy.animals-price", 100);
+        defaultPrice = CONFIG.getDouble("egging.economy.default-price", 100.00);
 
-        monstersPrice = CONFIG.getDouble("egging.economy.monsters-price", 500);
+        animalsPrice = CONFIG.getDouble("egging.economy.animals-price", 100.00);
 
-        golemsPrice = CONFIG.getDouble("egging.economy.golems-price", 250);
+        monstersPrice = CONFIG.getDouble("egging.economy.monsters-price", 500.00);
 
-        villagerPrice = CONFIG.getDouble("egging.economy.villager-price", 250);
+        golemsPrice = CONFIG.getDouble("egging.economy.golems-price", 250.00);
+
+        villagerPrice = CONFIG.getDouble("egging.economy.villager-price", 250.00);
+
+        bossPrice = CONFIG.getDouble("egging.economy.boss-price", 10000.00);
     }
 
     public Material getToolMaterial() {
@@ -127,6 +133,10 @@ public class ConfigManager {
         return economyEnabled;
     }
 
+    public double getToolPrice() {
+        return toolPrice;
+    }
+
     public double getDefaultPrice() {
         return defaultPrice;
     }
@@ -145,5 +155,9 @@ public class ConfigManager {
 
     public double getVillagerPrice() {
         return villagerPrice;
+    }
+
+    public double getBossPrice() {
+        return bossPrice;
     }
 }

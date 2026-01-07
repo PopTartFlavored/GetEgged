@@ -43,7 +43,7 @@ public final class GetEgged extends JavaPlugin {
         } else {
             vaultEconomyService = new VaultEconomyService(null, configManager, entityCategoryResolver);
         }
-        getCommand("getegged").setExecutor(new GeteggedCommands(eggingToolManager, configManager));
+        getCommand("getegged").setExecutor(new GeteggedCommands(eggingToolManager, configManager, vaultEconomyService));
         getServer().getPluginManager().registerEvents( new PlayerInteractEntityListener(this, dataManager,
                 eggingRulesService, eggingToolManager, entityInventoryValidator, eggFactory, vaultEconomyService)
                 , this);

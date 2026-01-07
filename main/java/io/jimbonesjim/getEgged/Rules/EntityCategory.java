@@ -6,6 +6,7 @@ public enum EntityCategory {
     MONSTER("getegged.monster."),
     GOLEM("getegged.golem."),
     VILLAGER("getegged.villager."),
+    BOSS("getegged.boss."),
     DEFAULT("getegged.");
 
     private final String permissionBase;
