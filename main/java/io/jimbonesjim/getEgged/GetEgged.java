@@ -50,7 +50,7 @@ public final class GetEgged extends JavaPlugin {
         getServer().getPluginManager().registerEvents( new PlayerUseSpawnEggListener(dataManager), this);
         getServer().getPluginManager().registerEvents( new PlayerPlaceListener(eggingToolManager), this);
 
-        getLogger().info("Fully enabled GetEgged v0.9");
+        getLogger().info("Fully enabled GetEgged v0.9.1");
     }
 
     private boolean setupEconomy() {
