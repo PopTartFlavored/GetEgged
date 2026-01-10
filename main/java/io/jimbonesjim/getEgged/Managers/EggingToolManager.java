@@ -3,6 +3,8 @@ package io.jimbonesjim.getEgged.Managers;
 import io.jimbonesjim.getEgged.utils.InventoryUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -28,17 +30,18 @@ public class EggingToolManager {
 
         ItemMeta meta = egging_tool.getItemMeta();
         PersistentDataContainer PDC = meta.getPersistentDataContainer();
-
         PDC.set(EGGING_TOOL, PersistentDataType.BOOLEAN, true);
+        PDC.set(TOOL_MODE, PersistentDataType.STRING, configManager.getUsageMode().name());
         if (configManager.getUsageMode() == ConfigManager.UsageMode.DURABILITY) {
             PDC.set(TOOL_DURABILITY, PersistentDataType.INTEGER, configManager.getMaxUses());
+            meta.setMaxStackSize(1);
         }
 
         meta.setEnchantmentGlintOverride(configManager.getToolGlow());
 
         meta.customName(Component.text(configManager.getToolName()).color(NamedTextColor.YELLOW));
 
-        meta.lore(updateLore(configManager.getMaxUses()));
+        meta.lore(updateLore(configManager.getMaxUses(), configManager.getUsageMode()));
         egging_tool.setItemMeta(meta);
         return egging_tool;
     }
@@ -55,17 +58,22 @@ public class EggingToolManager {
     }
 
     public void applyUsage(ItemStack tool, Player player) {
-        if (configManager.getUsageMode() == ConfigManager.UsageMode.NONE) return;
-        if (player.hasPermission("getegged.usagebypass")) return;
-        if (player.getGameMode() == GameMode.CREATIVE) return;
-
-        if (configManager.getUsageMode() == ConfigManager.UsageMode.DURABILITY) {
-            handleDurability(tool, player);
+        if (player.hasPermission("getegged.usagebypass") || player.getGameMode() == GameMode.CREATIVE) return;
+        if (!tool.getItemMeta().getPersistentDataContainer().has(TOOL_MODE, PersistentDataType.STRING)) {
+            InventoryUtil.removeOneFromMainHand(player, tool);
             return;
         }
-
-        // CONSUME mode fallback
-        InventoryUtil.removeOneFromMainHand(player, tool);
+        ConfigManager.UsageMode toolMode = ConfigManager.UsageMode.valueOf(tool.getPersistentDataContainer().get(TOOL_MODE, PersistentDataType.STRING));
+        switch (toolMode) {
+            case NONE:
+                break;
+            case CONSUME:
+                InventoryUtil.removeOneFromMainHand(player, tool);
+                break;
+            case DURABILITY:
+                handleDurability(tool, player);
+                break;
+        }
     }
 
     private void handleDurability(ItemStack tool, Player player) {
@@ -83,16 +91,23 @@ public class EggingToolManager {
         PersistentDataContainer PDC = meta.getPersistentDataContainer();
         int toolUses = getUses(meta) - 1;
         PDC.set(TOOL_DURABILITY, PersistentDataType.INTEGER, toolUses);
-        meta.lore(updateLore(toolUses));
+        meta.lore(updateLore(toolUses, ConfigManager.UsageMode.DURABILITY));
         return meta;
     }
 
-    private List<Component> updateLore(int toolUses) {
+    private List<Component> updateLore(int toolUses, ConfigManager.UsageMode usageMode) {
         List<Component> lore = new ArrayList<>();
-        if (configManager.getUsageMode() == ConfigManager.UsageMode.DURABILITY) {
-            lore.add(Component.text("Durability: " + toolUses + "/" + configManager.getMaxUses()));
+        switch (usageMode) {
+            case NONE ->  lore.add(Component.text("Unlimited Uses",  NamedTextColor.GOLD));
+            case CONSUME -> lore.add(Component.text("Consumed when used", NamedTextColor.GOLD));
+            case DURABILITY -> {
+                Component msg = MiniMessage.miniMessage().deserialize("<gold>Durability: <uses>/<maxuses>",
+                        Placeholder.parsed("uses", String.valueOf(toolUses)),
+                        Placeholder.parsed("maxuses", String.valueOf(configManager.getMaxUses())));
+                lore.add(msg);
+            }
         }
-        lore.add(Component.text(configManager.getToolLore()).color(NamedTextColor.YELLOW));
+        lore.add(Component.text(configManager.getToolLore(), NamedTextColor.YELLOW));
         return lore;
     }
 }

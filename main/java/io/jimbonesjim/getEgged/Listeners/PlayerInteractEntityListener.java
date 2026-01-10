@@ -84,7 +84,10 @@ public class PlayerInteractEntityListener implements Listener {
     //Sends message to player if RuleResult was not allowed
     private boolean fail(Player p, RuleResult result) {
         if (!result.allowed()) {
-            p.sendMessage(result.message());
+            Component msg = result.message();
+            if (msg != null) {
+                p.sendMessage(result.message());
+            }
             return true;
         }
         return false;

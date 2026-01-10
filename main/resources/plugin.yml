@@ -4,7 +4,7 @@ main: io.jimbonesjim.getEgged.GetEgged
 api-version: '1.21'
 authors: [ PopTart_Flavored ]
 description: Egg mobs into spawn eggs while preserving mob data.
-softdepend: [Vault]
+softdepend: [Vault, WorldGuard, GriefPrevention]
 
 commands:
   getegged:
@@ -29,4 +29,8 @@ permissions:
   getegged.monster.*:
     default: op
   getegged.golem.*:
+    default: op
+  getegged.worldguard.bypass:
+    default: op
+  getegged.griefprevention.bypass:
     default: op

@@ -10,6 +10,7 @@ public final class GetEggedKeys {
     public static NamespacedKey GETEGGED;
     public static NamespacedKey EGGING_TOOL;
     public static NamespacedKey TOOL_DURABILITY;
+    public static NamespacedKey TOOL_MODE;
 
     public static final class EntityKeys{
         public static NamespacedKey NAME;
@@ -48,6 +49,7 @@ public final class GetEggedKeys {
         GETEGGED = key(plugin, "getegged");
         EGGING_TOOL = key(plugin, "egging_tool");
         TOOL_DURABILITY = key(plugin, "tool_durability");
+        TOOL_MODE = key(plugin, "tool_mode");
 
         //ENTITY
         EntityKeys.NAME = key(plugin, "name");

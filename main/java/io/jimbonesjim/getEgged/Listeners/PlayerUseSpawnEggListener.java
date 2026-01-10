@@ -1,10 +1,14 @@
 package io.jimbonesjim.getEgged.Listeners;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import io.jimbonesjim.getEgged.Managers.DataManager;
+import io.jimbonesjim.getEgged.Services.GriefPreventionService;
+import io.jimbonesjim.getEgged.Services.WorldguardService;
 import io.jimbonesjim.getEgged.utils.InventoryUtil;
 import io.jimbonesjim.getEgged.utils.SafeSpawnUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -20,14 +24,17 @@ import org.bukkit.inventory.meta.SpawnEggMeta;
 public class PlayerUseSpawnEggListener implements Listener {
 
     private final DataManager dataManager;
+    private final WorldguardService worldguardService;
+    private final GriefPreventionService griefPreventionService;
 
-    public PlayerUseSpawnEggListener(DataManager dataManager){
+    public PlayerUseSpawnEggListener(DataManager dataManager, WorldguardService worldguardService, GriefPreventionService griefPreventionService) {
         this.dataManager = dataManager;
+        this.worldguardService = worldguardService;
+        this.griefPreventionService = griefPreventionService;
     }
     @EventHandler
     public void onSpawn(PlayerInteractEvent e){
         if (e.getAction().isLeftClick()) return;
-
         Player p = e.getPlayer();
         ItemStack egg = p.getInventory().getItemInMainHand();
 
@@ -50,9 +57,22 @@ public class PlayerUseSpawnEggListener implements Listener {
 
         Entity ent = SafeSpawnUtil.spawnSafely(etype, loc);
         if (ent == null) {
-            p.sendMessage(Component.text("This is not a safe spawn location for your " + etype.name() + ".").color(NamedTextColor.RED));
+            Component msg = MiniMessage.miniMessage().deserialize("<red>This is not a safe spawn location for your <dark_red><entity>",
+                    Placeholder.component("entity", Component.translatable(etype.translationKey())));
+            p.sendMessage(msg);
             return;
         }
+
+        if (!worldguardService.canSpawn(p, BukkitAdapter.adapt(ent.getLocation()))) {
+            ent.remove();
+            return;
+        }
+
+        if (!griefPreventionService.canBuild(p, ent.getLocation())) {
+            ent.remove();
+            return;
+        }
+
         dataManager.eggToEntity(ent, egg.getItemMeta());
         ent.setSilent(false);
         ent.setNoPhysics(false);
