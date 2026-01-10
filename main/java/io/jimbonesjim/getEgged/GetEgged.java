@@ -74,7 +74,7 @@ public final class GetEgged extends JavaPlugin {
         worldguardService.init();
         getLogger().info(worldguardService.enabled() ? "WorldGuard Hook enabled!" : "WorldGuard not found! Skipping Hook!");
 
-        getLogger().info("Fully enabled GetEgged v0.9.1");
+        getLogger().info("Fully enabled GetEgged v0.9.2");
     }
 
     private boolean setupEconomy() {
