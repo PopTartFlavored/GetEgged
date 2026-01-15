@@ -16,8 +16,14 @@ egging-item:
 
 
 egging:
-  # true/false for everyone to be able to egg other players tamed mobs.
+  # toggles for everyone to be able to egg other players tamed mobs.
   allow-tamed-egging: false
+
+  renaming:
+    # Toggles if renaming spawn egg will rename the mob when spawned
+    allowed: true
+    # Toggles if renaming requires player to have permission getegged.rename
+    require-permission: false
 
   economy:
     enabled: false
@@ -37,3 +43,7 @@ egging:
     villager-price: 250.00
     # Price of Boss entities. WITHER and ENDERDRAGON
     boss-price: 10000.00
+
+  # add entity type below to block egging of entity serverwide
+  black-list:
+    - WITHER

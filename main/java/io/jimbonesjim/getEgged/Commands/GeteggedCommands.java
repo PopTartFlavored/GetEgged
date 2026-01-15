@@ -1,5 +1,6 @@
 package io.jimbonesjim.getEgged.Commands;
 
+import io.jimbonesjim.getEgged.GetEgged;
 import io.jimbonesjim.getEgged.Managers.ConfigManager;
 import io.jimbonesjim.getEgged.Managers.EggingToolManager;
 import io.jimbonesjim.getEgged.Services.RuleResult;
@@ -21,6 +22,7 @@ import static org.bukkit.Bukkit.getPlayer;
 
 public class GeteggedCommands implements TabExecutor {
 
+    private final GetEgged getEgged;
     private final EggingToolManager eggingToolManager;
     private final ConfigManager configManager;
     private final VaultEconomyService vaultEconomyService;
@@ -31,7 +33,8 @@ public class GeteggedCommands implements TabExecutor {
     private final Component permissionMessage = Component.text("You do not have permission to use this command", NamedTextColor.RED);
     private final Component prefix =  Component.text("[GetEgged] ", NamedTextColor.GOLD);
 
-    public GeteggedCommands(EggingToolManager eggingToolManager, ConfigManager configManager, VaultEconomyService vaultEconomyService) {
+    public GeteggedCommands(GetEgged getegged, EggingToolManager eggingToolManager, ConfigManager configManager, VaultEconomyService vaultEconomyService) {
+        this.getEgged = getegged;
         this.eggingToolManager = eggingToolManager;
         this.configManager = configManager;
         this.vaultEconomyService = vaultEconomyService;
@@ -52,6 +55,7 @@ public class GeteggedCommands implements TabExecutor {
                     return true;
                 }
                 configManager.reloadConfig();
+                getEgged.reloadMessages();
                 sender.sendMessage(prefix.append(Component.text("Config reloaded!", NamedTextColor.GREEN)));
                 break;
             case "get":

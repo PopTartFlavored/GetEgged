@@ -4,6 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.List;
+
 public class ConfigManager {
 
     public enum UsageMode {
@@ -28,6 +30,9 @@ public class ConfigManager {
     private double bossPrice;
     private boolean eggTamed;
     private boolean economyEnabled;
+    private boolean renaming;
+    private boolean renaming_permNeeded;
+    private List<String> blacklist;
 
     public ConfigManager(JavaPlugin plugin) {
         PLUGIN = plugin;
@@ -70,6 +75,17 @@ public class ConfigManager {
                  false // default value
         );
 
+        renaming = CONFIG.getBoolean(
+                "egging.renaming.allowed",
+                true // default value
+        );
+
+        renaming_permNeeded = CONFIG.getBoolean(
+                "egging.renaming.require-permission",
+                false
+        );
+
+
         // Gets egging tool usage mode or sets as default
         String modeString = CONFIG.getString("egging-item.usage.mode",
                 "NONE" // default value
@@ -99,6 +115,8 @@ public class ConfigManager {
         villagerPrice = CONFIG.getDouble("egging.economy.villager-price", 250.00);
 
         bossPrice = CONFIG.getDouble("egging.economy.boss-price", 10000.00);
+
+        blacklist = CONFIG.getStringList("egging.black-list");
     }
 
     public Material getToolMaterial() {
@@ -119,6 +137,14 @@ public class ConfigManager {
 
     public boolean getEggTamed() {
         return eggTamed;
+    }
+
+    public boolean getRenaming() {
+        return renaming;
+    }
+
+    public boolean  getRenaming_permNeeded() {
+        return renaming_permNeeded;
     }
 
     public UsageMode getUsageMode() {
@@ -159,5 +185,9 @@ public class ConfigManager {
 
     public double getBossPrice() {
         return bossPrice;
+    }
+
+    public List<String> getBlacklist() {
+        return blacklist;
     }
 }

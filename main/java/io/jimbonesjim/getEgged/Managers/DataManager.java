@@ -7,6 +7,11 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.GETEGGED;
 
 public class DataManager {
@@ -37,5 +42,17 @@ public class DataManager {
 
     public void eggToEntity(Entity e, ItemMeta meta){
         LOADER.loadData(meta, e);
+    }
+
+    private final Map<EntityType, AtomicInteger> eggCounts = new EnumMap<>(EntityType.class);
+
+    public void recordEgged(EntityType type) {
+        eggCounts.computeIfAbsent(type, k -> new AtomicInteger()).incrementAndGet();
+    }
+
+    public Map<String, Integer> getEggCountsSnapshot() {
+        return eggCounts.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey().name(),
+                        e -> e.getValue().get()));
     }
 }
