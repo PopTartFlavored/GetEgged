@@ -1,20 +1,24 @@
 package io.jimbonesjim.getEgged.Listeners;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import io.jimbonesjim.getEgged.Managers.ConfigManager;
 import io.jimbonesjim.getEgged.Managers.DataManager;
+import io.jimbonesjim.getEgged.Managers.MessageManager;
 import io.jimbonesjim.getEgged.Services.GriefPreventionService;
 import io.jimbonesjim.getEgged.Services.WorldguardService;
 import io.jimbonesjim.getEgged.utils.InventoryUtil;
+import io.jimbonesjim.getEgged.utils.MiniMessageUtil;
 import io.jimbonesjim.getEgged.utils.SafeSpawnUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -24,15 +28,19 @@ import org.bukkit.inventory.meta.SpawnEggMeta;
 public class PlayerUseSpawnEggListener implements Listener {
 
     private final DataManager dataManager;
+    private final ConfigManager configManager;
+    private final MessageManager messageManager;
     private final WorldguardService worldguardService;
     private final GriefPreventionService griefPreventionService;
 
-    public PlayerUseSpawnEggListener(DataManager dataManager, WorldguardService worldguardService, GriefPreventionService griefPreventionService) {
+    public PlayerUseSpawnEggListener(DataManager dataManager, WorldguardService worldguardService, GriefPreventionService griefPreventionService, ConfigManager configManager, MessageManager messageManager) {
         this.dataManager = dataManager;
+        this.configManager = configManager;
+        this.messageManager = messageManager;
         this.worldguardService = worldguardService;
         this.griefPreventionService = griefPreventionService;
     }
-    @EventHandler
+    @EventHandler (priority= EventPriority.LOWEST)
     public void onSpawn(PlayerInteractEvent e){
         if (e.getAction().isLeftClick()) return;
         Player p = e.getPlayer();
@@ -45,6 +53,14 @@ public class PlayerUseSpawnEggListener implements Listener {
         }
 
         e.setCancelled(true);
+        e.setUseInteractedBlock(Event.Result.DENY);
+        e.setUseItemInHand(Event.Result.DENY);
+
+        Component newName = null;
+
+        if (egg.getItemMeta().hasDisplayName()){
+            newName = egg.getItemMeta().displayName();
+        }
 
         EntityType etype = eggMeta.getCustomSpawnedType();
         if (etype == null) {
@@ -57,9 +73,8 @@ public class PlayerUseSpawnEggListener implements Listener {
 
         Entity ent = SafeSpawnUtil.spawnSafely(etype, loc);
         if (ent == null) {
-            Component msg = MiniMessage.miniMessage().deserialize("<red>This is not a safe spawn location for your <dark_red><entity>",
-                    Placeholder.component("entity", Component.translatable(etype.translationKey())));
-            p.sendMessage(msg);
+            p.sendMessage(MiniMessageUtil.createMessage(messageManager.getUnsafeSpawnMessage(),
+                    Placeholder.component("entity", Component.translatable(etype.translationKey()))));
             return;
         }
 
@@ -74,6 +89,14 @@ public class PlayerUseSpawnEggListener implements Listener {
         }
 
         dataManager.eggToEntity(ent, egg.getItemMeta());
+
+        if (configManager.getRenaming()
+                && newName != null
+                && (!configManager.getRenaming_permNeeded() || p.hasPermission("getegged.rename"))) {
+            ent.customName(newName);
+        }
+
+
         ent.setSilent(false);
         ent.setNoPhysics(false);
         ent.setInvulnerable(false);

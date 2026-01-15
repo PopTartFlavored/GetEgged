@@ -5,22 +5,26 @@ import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flag;
-import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import io.jimbonesjim.getEgged.Managers.MessageManager;
+import io.jimbonesjim.getEgged.utils.MiniMessageUtil;
 import org.bukkit.entity.Player;
 
 public class WorldguardService {
 
+    private final MessageManager messageManager;
     private boolean wgExists = false;
     private WorldGuardPlugin wgPlugin;
     private RegionQuery query;
     private StateFlag GETEGGED_SPAWN;
     private StateFlag GETEGGED_EGG;
+
+    public WorldguardService(MessageManager messageManager) {
+        this.messageManager = messageManager;
+    }
 
     public void init(){
         wgPlugin = WorldGuardPlugin.inst();
@@ -45,9 +49,7 @@ public class WorldguardService {
         StateFlag.State state = query.queryState(entLoc, localPlayer, GETEGGED_EGG);
 
         if (state == StateFlag.State.DENY) {
-            if (query.queryState(entLoc, localPlayer, Flags.INTERACT) == StateFlag.State.ALLOW) {
-                player.sendMessage(Component.text("You can't egg mobs here!", NamedTextColor.RED));
-            }
+            player.sendMessage(MiniMessageUtil.createMessage(messageManager.getDenyWorldGuardEggingMessage()));
         }
 
         return state == StateFlag.State.ALLOW;
@@ -61,9 +63,7 @@ public class WorldguardService {
         StateFlag.State state = query.queryState(entLoc, localPlayer, GETEGGED_SPAWN);
 
         if (state == StateFlag.State.DENY) {
-            if (query.queryState(entLoc, localPlayer, Flags.BUILD) == StateFlag.State.ALLOW) {
-                player.sendMessage(Component.text("You can't spawn an egg here!",  NamedTextColor.RED));
-            }
+            player.sendMessage(MiniMessageUtil.createMessage(messageManager.getDenyWorldGuardSpawnMessage()));
         }
 
         return state == StateFlag.State.ALLOW;

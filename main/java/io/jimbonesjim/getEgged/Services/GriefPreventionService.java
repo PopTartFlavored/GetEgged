@@ -3,15 +3,13 @@ package io.jimbonesjim.getEgged.Services;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class GriefPreventionService {
 
     private GriefPrevention GP;
 
-    public void init(JavaPlugin plugin) {
+    public void init() {
         GP = GriefPrevention.instance;
-        plugin.getLogger().info("Registered GriefPrevention Services");
     }
 
     public boolean isEnabled(){

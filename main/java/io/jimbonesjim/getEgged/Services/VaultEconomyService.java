@@ -1,10 +1,10 @@
 package io.jimbonesjim.getEgged.Services;
 
 import io.jimbonesjim.getEgged.Managers.ConfigManager;
+import io.jimbonesjim.getEgged.Managers.MessageManager;
 import io.jimbonesjim.getEgged.Rules.EntityCategory;
+import io.jimbonesjim.getEgged.utils.MiniMessageUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -15,11 +15,13 @@ public class VaultEconomyService {
 
     private final Economy econ;
     private final ConfigManager configManager;
+    private final MessageManager messageManager;
     private final EntityCategoryResolver entityCategoryResolver;
 
-    public VaultEconomyService(Economy economy, ConfigManager configManager,  EntityCategoryResolver entityCategoryResolver) {
+    public VaultEconomyService(Economy economy, ConfigManager configManager, MessageManager messageManager, EntityCategoryResolver entityCategoryResolver) {
         econ = economy;
         this.configManager = configManager;
+        this.messageManager = messageManager;
         this.entityCategoryResolver = entityCategoryResolver;
     }
 
@@ -44,14 +46,11 @@ public class VaultEconomyService {
 
         if (response.transactionSuccess()) {
             // Succesfully withdrawn, formatted message sent to player
-            Component paidMessage = MiniMessage.miniMessage().deserialize(
-                    "<yellow>You have paid <green><cost><yellow> to get an <dark_purple>Egging Tool.",
-                    Placeholder.parsed("cost", econ.format(cost)));
-            player.sendMessage(paidMessage);
+            player.sendMessage(MiniMessageUtil.createMessage(messageManager.getToolPaidMessage(), Placeholder.parsed("cost", econ.format(cost))));
             return RuleResult.ok();
         } else {
             // Not enough money
-            return RuleResult.fail(Component.text("You don't have enough money to get an egging tool!", NamedTextColor.RED));
+            return RuleResult.fail(MiniMessageUtil.createMessage(messageManager.getFailedPayToolMessage(), Placeholder.parsed("cost", econ.format(cost))));
         }
     }
 
@@ -68,17 +67,15 @@ public class VaultEconomyService {
 
         if (response.transactionSuccess()) {
             // Succesfully withdrawn, formatted message sent to player
-            Component paidMessage = MiniMessage.miniMessage().deserialize(
-                    "<yellow>You have paid <green><cost><yellow> to egg that <dark_purple><entity>",
+            player.sendMessage(MiniMessageUtil.createMessage(messageManager.getEggPaidMessage(),
                     Placeholder.parsed("cost", econ.format(cost)),
-                    Placeholder.component("entity", Component.translatable(entity.getType().translationKey())));
-            player.sendMessage(paidMessage);
+                    Placeholder.component("entity", Component.translatable(entity.getType().translationKey()))));
             return RuleResult.ok();
         } else {
             // Not enough money
-            return RuleResult.fail(
-                    Component.text("You don't have enough money to egg a ", NamedTextColor.RED)
-                            .append(Component.translatable(entity.getType().translationKey(), NamedTextColor.DARK_RED)));
+            return RuleResult.fail(MiniMessageUtil.createMessage(messageManager.getFailedPayEggMessage(),
+                    Placeholder.parsed("cost", econ.format(cost)),
+                    Placeholder.component("entity", Component.translatable(entity.getType().translationKey()))));
         }
     }
 

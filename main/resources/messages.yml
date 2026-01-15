@@ -1,0 +1,46 @@
+# =================================================================
+#  GetEgged  messages.yml  –  MiniMessage format
+# =================================================================
+#  Colours/gradients  (<yellow>, <green>, <red>, <dark_red>, <dark_purple>, etc…)
+#  Placeholders  (case-sensitive):
+#    <entity>  – translatable entity name  (Cow, Villager, Zombie, etc…)
+#    <cost>    – Vault-formatted money      ($1,250.30,  15 Coins, etc…)
+#
+#  MiniMessage extras you can use: https://docs.papermc.io/adventure/minimessage/format/
+#    <bold>, <italic>, <underlined>, <strikethrough>
+#    <rainbow>, <gradient:#ff0000:#00ff00>
+#    <hover:show_text:'<gray>Click to get an egging tool!'><click:run_command:/getegged get>
+# =================================================================
+
+# shown when player lacks getegged.<category>.<MOB> or has getegged.deny.<MOB>
+no-permission: "<red>You do not have permission to egg a <dark_red><entity>."
+
+# shown when target is Tameable and owned by someone else (unless bypass perm)
+tamed: "<red>You cannot egg someone else's <dark_red><entity>."
+
+# shown when the mob is on the server blacklist (config.yml)
+blacklisted: "<red>Egging of <dark_red><entity><red> has been disabled on this server."
+
+# shown when the spawning location is unsafe (lava, inside block, etc.)
+unsafe-spawn: "<red>This is not a safe spawn location for your <dark_red><entity>."
+
+# economy – successful purchase of the egging tool
+tool-paid: "<yellow>You have paid <green><cost><yellow> to get an <dark_purple>egging tool."
+
+# economy – successful egging of a mob with money withdrawn
+egg-paid: "<yellow>You have paid <green><cost><yellow> to egg that <dark_purple><entity>."
+
+# economy – not enough money for the egging tool
+failed-pay-tool: "<red>You need <green><cost><red> for an egging tool."
+
+# economy – not enough money to egg that specific mob
+failed-pay-egg: "<red>You need <green><cost><red> to egg that <dark_red><entity>."
+
+# shown when WorldGuard flag getegged-egg = DENY
+worldguard-deny-egging: "<red>You can't egg mobs here."
+
+# shown when WorldGuard flag getegged-spawn = DENY
+worldguard-deny-spawn: "<red>You can't spawn an egg here."
+
+# shown when the mob's inventory is not empty (horses, llamas, villagers, etc.)
+deny-items: "<red>That <dark_red><entity><red> has items in inventory and cannot be egged."

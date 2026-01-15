@@ -9,6 +9,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -37,9 +38,10 @@ public class PlayerInteractEntityListener implements Listener {
         this.vaultEconomyService = vaultEconomyService;
     }
 
-    @EventHandler
+    @EventHandler (priority= EventPriority.LOWEST)
     public void onInteract(PlayerInteractEntityEvent e){
         Entity entity = e.getRightClicked();
+        EntityType eType = entity.getType();
         Player p = e.getPlayer();
         ItemStack mainHand = p.getInventory().getItemInMainHand();
         if(mainHand.getType().name().endsWith("_SPAWN_EGG") && dataManager.fromGetEgged(mainHand.getItemMeta())){
@@ -79,6 +81,7 @@ public class PlayerInteractEntityListener implements Listener {
 
         // Gives spawn egg to player after a second
         plugin.getServer().getScheduler().runTask(plugin, () -> p.give(egg));
+        dataManager.recordEgged(eType);
     }
 
     //Sends message to player if RuleResult was not allowed
