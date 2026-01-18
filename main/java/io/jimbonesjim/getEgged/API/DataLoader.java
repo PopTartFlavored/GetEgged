@@ -1,5 +1,6 @@
 package io.jimbonesjim.getEgged.API;
 
+import io.jimbonesjim.getEgged.utils.VillagerTradeSerializer;
 import io.papermc.paper.entity.CollarColorable;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -15,6 +16,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.VillagerKeys.*;
 import static org.bukkit.Bukkit.getOfflinePlayer;
 import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.EntityKeys.*;
 import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.HorseKeys.*;
@@ -154,9 +156,22 @@ public class DataLoader {
             if (hasData(PDC, TYPE, PersistentDataType.STRING)) {
                 loadRegistry(PDC, TYPE, Registry.VILLAGER_TYPE, v::setVillagerType);
             }
-//            if (hasData(PDC, PROF, PersistentDataType.STRING)) {
-//                loadRegistry(PDC, PROF, Registry.VILLAGER_PROFESSION, v::setProfession);
-//            }
+
+            if (hasData(PDC, PROF, PersistentDataType.STRING)) {
+                loadRegistry(PDC, PROF, Registry.VILLAGER_PROFESSION, v::setProfession);
+            }
+
+            if (hasData(PDC, LEVEL, PersistentDataType.INTEGER)) {
+                v.setVillagerLevel(PDC.get(LEVEL, PersistentDataType.INTEGER));
+            }
+
+            if (hasData(PDC, EXP, PersistentDataType.INTEGER)) {
+                v.setVillagerExperience(PDC.get(EXP, PersistentDataType.INTEGER));
+            }
+
+            if (hasData(PDC, RECIPES, PersistentDataType.STRING) && v.getVillagerLevel() >= 2) {
+                v.setRecipes(VillagerTradeSerializer.deserializeTrades(PDC.get(RECIPES, PersistentDataType.STRING)));
+            }
         }
     }
 

@@ -66,7 +66,10 @@ public class LoreBuilder {
 
         if (e instanceof Villager v){
             lore.add(createLabel("Type: ", v.getVillagerType().getKey().getKey()));
-            // Add Profession and more stuff later
+            if (v.getVillagerLevel() >= 2){
+                lore.add(createLabel("Profession: ", v.getProfession().getKey().getKey()));
+                lore.add(createLabel("Level: ", String.valueOf(v.getVillagerLevel())));
+            }
         }
 
         if (e instanceof AbstractHorse ah && !(ah instanceof Llama)){

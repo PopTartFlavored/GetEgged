@@ -1,5 +1,6 @@
 package io.jimbonesjim.getEgged.API;
 
+import io.jimbonesjim.getEgged.utils.VillagerTradeSerializer;
 import io.papermc.paper.entity.CollarColorable;
 import io.papermc.paper.entity.Shearable;
 import org.bukkit.NamespacedKey;
@@ -123,8 +124,12 @@ public class DataSaver {
     }
 
     private void saveVillagerData(Villager v, PersistentDataContainer PDC){
-        PDC.set(PROF, PersistentDataType.STRING, v.getProfession().getKey().toString());
-        PDC.set(TYPE, PersistentDataType.STRING, v.getVillagerType().getKey().toString());
-        PDC.set(LEVEL, PersistentDataType.INTEGER, v.getVillagerLevel());
+        PDC.set(TYPE, PersistentDataType.STRING, v.getVillagerType().getKey().getKey());
+        if (v.getVillagerLevel() >= 2) {
+            PDC.set(PROF, PersistentDataType.STRING, v.getProfession().getKey().getKey());
+            PDC.set(LEVEL, PersistentDataType.INTEGER, v.getVillagerLevel());
+            PDC.set(EXP, PersistentDataType.INTEGER, v.getVillagerExperience());
+            PDC.set(RECIPES, PersistentDataType.STRING, VillagerTradeSerializer.serializeTrades(v));
+        }
     }
 }

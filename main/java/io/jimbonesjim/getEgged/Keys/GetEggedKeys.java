@@ -43,6 +43,8 @@ public final class GetEggedKeys {
     public static final class VillagerKeys {
         public static NamespacedKey PROF;
         public static NamespacedKey LEVEL;
+        public static NamespacedKey EXP;
+        public static NamespacedKey RECIPES;
     }
 
     public static void init(JavaPlugin plugin){
@@ -80,6 +82,8 @@ public final class GetEggedKeys {
         //VILLAGER
         VillagerKeys.PROF = key(plugin, "profession");
         VillagerKeys.LEVEL =  key(plugin, "level");
+        VillagerKeys.EXP = key(plugin, "exp");
+        VillagerKeys.RECIPES = key(plugin, "recipes");
     }
 
     private static NamespacedKey key(JavaPlugin plugin, String key) {
