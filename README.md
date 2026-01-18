@@ -1,33 +1,27 @@
-# GetEgged
+GetEgged allows players to capture mobs into spawn eggs while preserving important data such as names, age, tamed status, variants, colors, and horse stats.  
 
-## ⚠️ This plugin is still under active development. Behavior and features may change between versions.
+**Vault economy support** with configurable prices per entity category (animals, monsters, villagers, golems, bosses, default) with creative mode and permission-based bypass.  
 
-GetEgged allows players to capture mobs into spawn eggs while preserving important data such as names, age, tamed status, variants, colors, and horse stats.
+**WorldGuard support** with custom flags `getegged-egg` and `getegged-spawn`. **Allowed by default!** You must set to deny for each region. Bypass permission `getegged.worldguard.bypass`
+
+**GriefPrevention support** with bypass permission `getegged.griefprevention.bypass` 
 
 Designed to be lightweight, permission-based, and survival-friendly, with a focus on server control and balance.
 
 ## Usage:
 
-Right-click a mob with the configurable capture item to store it in a spawn egg.
-Obtain the capture item using `/getegged get`
+Right-click a mob with the configurable egging tool to store it in a spawn egg.  
+Obtain the capture item using `/getegged get`  
+Configurable egging tool usage `NONE, DURABILITY, or CONSUME` with creative mode and permission-based bypass.  
+Price to obtain the egging tool is configurable in the config file.
 
 Please let me know if you find any bugs or behavior that doesn’t seem correct.
-You can report issues or suggestions on GitHub:
-https://github.com/PopTartFlavored/GetEgged/issues
+You can report issues or suggestions on GitHub:  
+<https://github.com/PopTartFlavored/GetEgged/issues>
 
 ## ⚠️ Known limitations:
 
-
-Villager profession and trades are not yet restored.
-
-
-## 📌 Planned features:
-
-- Economy Support
-
-- Capture Item durability/consumption
-
-- Improved villager data restoration
+- Entities with items in their inventories cannot be egged. (Excluding saddles and horse armor.)
 
 ## 🧩 Permissions:
 
@@ -46,9 +40,23 @@ Villager profession and trades are not yet restored.
   
 `getegged.golem.*` - Allows egging of all golems
 
-`getegged.villager` - Allows egging of villagers
+`getegged.villager.<MOB>` - Allows egging of specific villager type (VILLAGER and WANDERING_TRADER)
+
+`getegged.villager.*` - Allows egging of all villager types
+
+`getegged.boss.<MOB>` - Allows egging of specific boss mob (WITHER and ENDERDRAGON)
+
+`getegged.boss.*` - Allows egging of all boss mobs
+
+`getegged.deny.<MOB>` - Denies egging of speccific mob even if they have another permission that allows it
+
+`getegged.rename` - Allows renaming of mob at spawn if spawn egg has been renamed. Toggleable in config
 
 `getegged.tamed` - Allows egging of tamed animals owned by other players
+
+`getegged.economybypass` - Allows bypass of economy
+
+`getegged.usagebypass` - Allows bypass of egging tool usage/consumption
 
 `getegged.get` - Allows use of `/getegged get`
   
