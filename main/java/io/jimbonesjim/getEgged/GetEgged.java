@@ -93,7 +93,7 @@ public final class GetEgged extends JavaPlugin {
         metrics = new Metrics(this, BSTATSID);
         setUpBStatCharts();
 
-        getLogger().info("Fully enabled GetEgged v0.9.4");
+        getLogger().info("Fully enabled GetEgged v0.9.5");
     }
 
     private void setUpBStatCharts(){

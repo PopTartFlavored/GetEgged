@@ -29,6 +29,7 @@ public final class GetEggedKeys {
         public static NamespacedKey RIGHT_HORN;
         public static NamespacedKey LEFT_HORN;
         public static NamespacedKey CAT_TYPE;
+        public static NamespacedKey SOUND_VARIANT;
     }
 
     public static final class HorseKeys {
@@ -70,6 +71,7 @@ public final class GetEggedKeys {
         EntityKeys.RIGHT_HORN = key(plugin, "right_horn");
         EntityKeys.LEFT_HORN = key(plugin, "left_horn");
         EntityKeys.CAT_TYPE = key(plugin, "cat_type");
+        EntityKeys.SOUND_VARIANT = key(plugin, "sound_variant");
 
         //HORSE
         HorseKeys.JUMP = key(plugin, "jump");

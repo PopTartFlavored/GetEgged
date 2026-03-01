@@ -4,9 +4,7 @@ import io.jimbonesjim.getEgged.Managers.MessageManager;
 import io.jimbonesjim.getEgged.utils.MiniMessageUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.ChestedHorse;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.InventoryHolder;
 
 public class EntityInventoryValidator {
@@ -20,6 +18,7 @@ public class EntityInventoryValidator {
     // Allows saddles / horse armor
     // Blocks chested animals with actual inventories
     public RuleResult hasItems(Entity entity) {
+        if (entity instanceof AbstractNautilus) return RuleResult.ok();
 
         Component deny_message = MiniMessageUtil.createMessage(messageManager.getDenyItemsMessage(),
                 Placeholder.component("entity", Component.translatable(entity.getType().translationKey())));

@@ -8,11 +8,13 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Base64;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -94,6 +96,9 @@ public class DataLoader {
             }
             if (e instanceof Pig pig){
                 loadRegistry(PDC, VARIANT, RegistryAccess.registryAccess().getRegistry(RegistryKey.PIG_VARIANT), pig::setVariant);
+                if (hasData(PDC, SADDLED, PersistentDataType.BOOLEAN)) {
+                    pig.setSaddle(Boolean.TRUE.equals(PDC.get(SADDLED, PersistentDataType.BOOLEAN)));
+                }
             }
             if (e instanceof Parrot parrot) {
                 loadVariant(PDC, VARIANT, Parrot.Variant.class, parrot::setVariant);
@@ -113,6 +118,35 @@ public class DataLoader {
 
             if (e instanceof Wolf w){
                 loadRegistry(PDC, VARIANT, RegistryAccess.registryAccess().getRegistry(RegistryKey.WOLF_VARIANT), w::setVariant);
+                loadRegistry(PDC, SOUND_VARIANT, RegistryAccess.registryAccess().getRegistry(RegistryKey.WOLF_SOUND_VARIANT), w::setSoundVariant);
+                if (hasData(PDC, ARMOR, PersistentDataType.STRING)) {
+                    w.getEquipment().setItem(EquipmentSlot.BODY, ItemStack.of(Material.WOLF_ARMOR));
+                    try {
+                        ItemStack armor = ItemStack.deserializeBytes(Base64.getDecoder().decode(PDC.get(ARMOR, PersistentDataType.STRING)));
+                        w.getEquipment().setItem(EquipmentSlot.BODY, armor);
+                    } catch (IllegalArgumentException ignored) {
+                        w.getEquipment().setItem(EquipmentSlot.BODY, ItemStack.of(Material.WOLF_ARMOR));
+                    }
+                }
+            }
+        }
+        if (e instanceof Strider strider) {
+            if (hasData(PDC, SADDLED, PersistentDataType.BOOLEAN)) {
+                strider.setSaddle(Boolean.TRUE.equals(PDC.get(SADDLED, PersistentDataType.BOOLEAN)));
+            }
+        }
+        if (e instanceof HappyGhast happyGhast) {
+            if (hasData(PDC, ARMOR, PersistentDataType.STRING)) {
+                happyGhast.getEquipment().setItem(EquipmentSlot.BODY, ItemStack.of(Material.valueOf(PDC.get(ARMOR, PersistentDataType.STRING))));
+            }
+        }
+
+        if (e instanceof AbstractNautilus nautilus) {
+            if (hasData(PDC, ARMOR, PersistentDataType.STRING)) {
+                nautilus.getEquipment().setItem(EquipmentSlot.BODY, ItemStack.of(Material.valueOf(PDC.get(ARMOR, PersistentDataType.STRING))));
+            }
+            if (hasData(PDC, SADDLED, PersistentDataType.BOOLEAN)) {
+                nautilus.getEquipment().setItem(EquipmentSlot.SADDLE, ItemStack.of(Material.SADDLE));
             }
         }
         if (e instanceof TropicalFish tf){

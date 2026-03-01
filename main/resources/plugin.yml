@@ -1,5 +1,5 @@
 name: GetEgged
-version: '0.9.4'
+version: '0.9.5'
 main: io.jimbonesjim.getEgged.GetEgged
 api-version: '1.21'
 authors: [ PopTart_Flavored ]

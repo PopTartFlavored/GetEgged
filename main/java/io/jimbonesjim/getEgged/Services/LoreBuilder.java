@@ -2,9 +2,13 @@ package io.jimbonesjim.getEgged.Services;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.meta.ColorableArmorMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +29,10 @@ public class LoreBuilder {
             lore.add(createLabel("Owner: ", te.getOwner().getName()));
         }
 
-        if (e instanceof Pig pig) lore.add(createLabel("Variant: ", pig.getVariant().getKey().getKey()));
+        if (e instanceof Pig pig) {
+            if (pig.hasSaddle()) lore.add(addSaddle());
+            lore.add(createLabel("Variant: ", pig.getVariant().getKey().getKey()));
+        }
 
         if (e instanceof Chicken chicken) lore.add(createLabel("Variant: ", chicken.getVariant().getKey().getKey()));
 
@@ -37,6 +44,23 @@ public class LoreBuilder {
 
         if (e instanceof Creeper creeper && creeper.isPowered()) lore.add(Component.text("Powered", NamedTextColor.GOLD));
 
+        if (e instanceof Strider strider && strider.hasSaddle()) lore.add(addSaddle());
+
+        if (e instanceof HappyGhast happyGhast && happyGhast.getEquipment().getItem(EquipmentSlot.BODY).getType().name().contains("_HARNESS")) {
+            String harnessColor = happyGhast.getEquipment().getItem(EquipmentSlot.BODY).getType().name().replace("_HARNESS", "");
+            lore.add(Component.text("Harnessed", stringToTextColor(harnessColor)));
+        }
+
+        if (e instanceof AbstractNautilus nautilus) {
+            if (nautilus.getEquipment().getItem(EquipmentSlot.SADDLE).getType() ==  Material.SADDLE) {
+                lore.add(addSaddle());
+            }
+            if (nautilus.getEquipment().getItem(EquipmentSlot.BODY).getType().name().contains("_NAUTILUS_ARMOR")) {
+                String ArmorColor = nautilus.getEquipment().getItem(EquipmentSlot.BODY).getType().name().replace("_NAUTILUS_ARMOR", "");
+                lore.add(Component.text("Armored", stringToTextColor(ArmorColor)));
+            }
+        }
+
         if (e instanceof Slime slime) lore.add(createLabel("Size: ", String.valueOf(slime.getSize())));
 
         if (e instanceof Fox fox) lore.add(createLabel("Type: ", fox.getFoxType().name()));
@@ -47,7 +71,15 @@ public class LoreBuilder {
 
         if (e instanceof Frog frog) lore.add(createLabel("Variant: ", frog.getVariant().getKey().getKey()));
 
-        if (e instanceof Wolf wolf) lore.add(createLabel("Variant: ", wolf.getVariant().getKey().getKey()));
+        if (e instanceof Wolf wolf) {
+            if (wolf.getEquipment().getItem(EquipmentSlot.BODY).getType() == Material.WOLF_ARMOR) {
+                if (wolf.getEquipment().getItem(EquipmentSlot.BODY).getItemMeta() instanceof ColorableArmorMeta armorMeta) {
+                    lore.add(Component.text("Armored", TextColor.color(armorMeta.getColor().asRGB())));
+                }
+            }
+            lore.add(createLabel("Variant: ", wolf.getVariant().getKey().getKey()));
+            lore.add(createLabel("Sound Variant: ",  wolf.getSoundVariant().getKey().getKey()));
+        }
 
         if (e instanceof Cat cat) lore.add(createLabel("Type: ", cat.getCatType().getKey().getKey()));
 
@@ -84,7 +116,7 @@ public class LoreBuilder {
             lore.add(createLabel("Jump: ", String.format("%.2f", jump) + " blocks"));
             lore.add(createLabel("Speed: ", String.format("%.2f", speed) + " blocks/second"));
             if (ah instanceof ChestedHorse chestedHorse && chestedHorse.isCarryingChest()) lore.add(Component.text("Chested", NamedTextColor.GOLD));
-            if (ah.getInventory().getSaddle() != null) lore.add(Component.text("Saddled", NamedTextColor.GOLD));
+            if (ah.getInventory().getSaddle() != null) lore.add(addSaddle());
         }
 
         if (e instanceof Horse horse) {
@@ -108,6 +140,10 @@ public class LoreBuilder {
         }
 
         return lore;
+    }
+
+    private Component addSaddle() {
+        return Component.text("Saddled", NamedTextColor.GOLD);
     }
 
     private Component createLabel(String key, String value){

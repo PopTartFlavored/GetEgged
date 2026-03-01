@@ -3,13 +3,17 @@ package io.jimbonesjim.getEgged.API;
 import io.jimbonesjim.getEgged.utils.VillagerTradeSerializer;
 import io.papermc.paper.entity.CollarColorable;
 import io.papermc.paper.entity.Shearable;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Base64;
 
 import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.*;
 import static io.jimbonesjim.getEgged.Keys.GetEggedKeys.EntityKeys.*;
@@ -26,7 +30,12 @@ public class DataSaver {
         if (e instanceof Ageable ae) saveBaby(ae, PDC);
 
         //Variant saving
-        if (e instanceof Pig pig) saveVariant(pig.getVariant().getKey().toString(), VARIANT, PDC);
+        if (e instanceof Pig pig) {
+            saveVariant(pig.getVariant().getKey().toString(), VARIANT, PDC);
+            if (pig.hasSaddle()) {
+                saveSaddle(PDC);
+            }
+        }
         if (e instanceof Chicken chicken) saveVariant(chicken.getVariant().getKey().toString(), VARIANT, PDC);
         //if (e instanceof Cow cow) saveVariant(cow.getVariant().getKey().toString(), VARIANT, PDC);
         if (e instanceof Sheep s) {
@@ -52,7 +61,33 @@ public class DataSaver {
         if (e instanceof Goat goat) saveHorns(goat, PDC);
         if (e instanceof Creeper creeper) savePowered(creeper, PDC);
         if (e instanceof Slime slime) saveSize(slime, PDC);
-        if (e instanceof Wolf w) saveVariant(w.getVariant().getKey().toString(), VARIANT, PDC);
+        if (e instanceof Wolf w) {
+            saveVariant(w.getVariant().getKey().toString(), VARIANT, PDC);
+            saveVariant(w.getSoundVariant().getKey().toString(), SOUND_VARIANT, PDC);
+            if (w.getEquipment().getItem(EquipmentSlot.BODY).getType() == Material.WOLF_ARMOR) {
+                Base64.Encoder encoder = Base64.getEncoder();
+                String armor = encoder.encodeToString(w.getEquipment().getItem(EquipmentSlot.BODY).serializeAsBytes());
+                PDC.set(ARMOR, PersistentDataType.STRING, armor);
+            }
+        }
+        if (e instanceof Strider strider && strider.hasSaddle()) {
+            saveSaddle(PDC);
+        }
+
+        if (e instanceof HappyGhast happyGhast) {
+            if (happyGhast.getEquipment().getItem(EquipmentSlot.BODY).getType().name().contains("_HARNESS")) {
+                PDC.set(ARMOR, PersistentDataType.STRING, happyGhast.getEquipment().getItem(EquipmentSlot.BODY).getType().name());
+            }
+        }
+
+        if (e instanceof AbstractNautilus nautilus) {
+            if (nautilus.getEquipment().getItem(EquipmentSlot.BODY).getType().name().contains("_NAUTILUS_ARMOR")) {
+                PDC.set(ARMOR, PersistentDataType.STRING, nautilus.getEquipment().getItem(EquipmentSlot.BODY).getType().name());
+            }
+            if (nautilus.getEquipment().getItem(EquipmentSlot.SADDLE).getType() == Material.SADDLE) {
+                saveSaddle(PDC);
+            }
+        }
 
         //special cases
         if (e instanceof AbstractHorse ah) saveAbstractHorseData(ah, PDC);
@@ -71,6 +106,10 @@ public class DataSaver {
     private void saveOwner(Tameable te, PersistentDataContainer PDC) {
         if (!te.isTamed() || te.getOwnerUniqueId() == null) return;
         PDC.set(OWNER, PersistentDataType.STRING, te.getOwnerUniqueId().toString());
+    }
+
+    private void saveSaddle(PersistentDataContainer PDC) {
+        PDC.set(SADDLED, PersistentDataType.BOOLEAN, true);
     }
 
     private void saveSheared(Shearable se, PersistentDataContainer PDC) {
